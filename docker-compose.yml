@@ -1,0 +1,35 @@
+version: '3'
+services:
+  boilerplate_postgres:
+    restart: always
+    container_name: boilerplate_postgres
+    image: postgres:15.1
+    volumes:
+      - data_postgres:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    env_file:
+      - .env
+    networks:
+      - boilerplate_postgres
+
+  boilerplate_pgadmin:
+    restart: always
+    container_name: boilerplate_pgadmin
+    image: dpage/pgadmin4:6.18
+    ports:
+      - "8080:80"
+    volumes:
+      - data_pgadmin:/root/.pgadmin
+    env_file:
+      - .env
+    networks:
+      - boilerplate_postgres
+
+volumes:
+  data_postgres:
+  data_pgadmin:
+
+networks:
+  boilerplate_postgres:
+    driver: bridge

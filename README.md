@@ -58,6 +58,23 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Before start application
+Directory logs should be created in root folder.
+
+Docker (only for database) can be run with the following command
+```bash
+#run docker
+$ docker compose up -d --build
+
+#stop docker
+$ docker compose down
+```
+Seeds can be run with the next command
+```bash
+$ npm run seed
+```
+
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
