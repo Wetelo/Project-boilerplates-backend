@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { UserRoleEnum } from '../common/enums/user-role.enum';
-import { CONFIG } from '../common/constants/config';
+import { CONFIG } from '../common/enums/config';
 import * as process from 'process';
 
 export class UserSeeder implements Seeder {

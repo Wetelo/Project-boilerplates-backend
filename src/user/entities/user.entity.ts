@@ -3,10 +3,13 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserRoleEnum } from '../../common/enums/user-role.enum';
+import { FileEntity } from '../../file/entities/file.entity';
 
 @Entity()
 export class User {
@@ -28,8 +31,13 @@ export class User {
   @Column({ nullable: true })
   public password: string;
 
-  @Column({ nullable: true })
-  public avatar: string;
+  @JoinColumn({ name: 'avatar_file_id', referencedColumnName: 'id' })
+  @OneToOne(() => FileEntity, {
+    orphanedRowAction: 'delete',
+    onDelete: 'CASCADE',
+    cascade: true,
+  })
+  public avatar: FileEntity;
 
   @Column({
     type: 'enum',

@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Log } from '../entities/log.entity';
 import { LogType } from '../enums/type.enum';
 import { logParams } from '../types/log-params.type';
-import { ENTITIES } from '../../common/constants/entities';
+import { ENTITIES } from '../../common/enums/entities';
 
 @Injectable()
 export class LoggerService {
