@@ -60,6 +60,7 @@ $ npm run test:cov
 
 ## Before start application
 Directory logs should be created in root folder.
+Directory uploads/public should be created in root folder for file uploading.
 
 Docker (only for database) can be run with the following command
 ```bash

@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FileService } from '../services/file.service';
-import { FileS3Service } from '../services/file-s3.service';
 import { randomUUID } from 'crypto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MAX_FILE_SIZE, UPLOAD_FILE_PATH } from '../../common/constants/file';
@@ -23,9 +22,7 @@ import { Response } from 'express';
 @ApiTags('file')
 @Controller('file')
 export class FileController {
-  constructor(
-    private readonly fileLocal: FileService,
-  ) {}
+  constructor(private readonly fileLocal: FileService) {}
   //TODO add apidoc, add guards
   @Post()
   @UseInterceptors(

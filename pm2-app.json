@@ -1,0 +1,88 @@
+{
+  "apps" : [
+    {
+      "name": "boilerplate-api-staging",
+      "script": "npm",
+      "args": "start",
+      "instances": "1",
+      "exec_mode": "cluster",
+      "watch": false,
+      "merge_logs": false,
+      "log_date_format": "YYYY-MM-DD HH:mm Z",
+      "env": {
+        "NODE_ENV": "staging"
+      }
+    },
+    {
+      "name": "boilerplate-api-production",
+      "script": "npm",
+      "args": "run start:prod",
+      "instances": "1",
+      "exec_mode": "cluster",
+      "watch": false,
+      "merge_logs": false,
+      "log_date_format": "YYYY-MM-DD HH:mm Z",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  ],
+  "deploy":{
+    "staging-local":{
+      "user":"server_user",
+      "key": "path_to_local_ssh_key",
+      "host":["server_ip"],
+      "ref":"origin/staging",
+      "repo":"gitlab_repo",
+      "path":"path_to_server_project_directory",
+      "ssh_options":["StrictHostKeyChecking=no","PasswordAuthentication=no"],
+      "pre-setup":"echo 'This is a local executed command'",
+      "post-setup":"ls -la && source ~/.nvm/nvm.sh && source ~/.profile && node -v  && nvm use 20.11.0 && pwd && npm install && npm i -g @nestjs/cli && cp .env.staging .env && npm run build && pm2 start pm2-app.json --only boilerplate-api-staging",
+      "pre-deploy-local":"echo 'This is a local executed command'",
+      "post-deploy":"ls -la && source ~/.nvm/nvm.sh && source ~/.profile && node -v && nvm use 20.11.0 && pwd && npm install && cp .env.staging .env && npm run build && pm2 stop 'boilerplate-api-staging' && pm2 delete 'boilerplate-api-staging' && pm2 start pm2-app.json --only boilerplate-api-staging",
+      "env":{"NODE_ENV":"staging"}
+    },
+    "production-local":{
+      "user":"server_user",
+      "key": "path_to_local_ssh_key",
+      "host":["server_ip"],
+      "ref":"origin/staging",
+      "repo":"gitlab_repo",
+      "path":"path_to_server_project_directory",
+      "ssh_options":["StrictHostKeyChecking=no","PasswordAuthentication=no"],
+      "pre-setup":"echo 'This is a local executed command'",
+      "post-setup":"ls -la && source ~/.nvm/nvm.sh && source ~/.profile && node -v  && nvm use 20.11.0 && pwd && npm install && npm i -g @nestjs/cli && cp .env.production .env && npm run build && pm2 start pm2-app.json --only boilerplate-api-production",
+      "pre-deploy-local":"echo 'This is a local executed command'",
+      "post-deploy":"ls -la && source ~/.nvm/nvm.sh && source ~/.profile && node -v && nvm use 20.11.0 && pwd && npm install && cp .env.production .env && npm run build && pm2 stop 'raffles-life-api-production' && pm2 delete 'boilerplate-api-production' && pm2 start pm2-app.json --only boilerplate-api-production",
+      "env":{"NODE_ENV":"production"}
+    },
+    "staging":{
+      "user":"server_user",
+      "key": "path_to_local_ssh_key",
+      "host":["server_ip"],
+      "ref":"origin/staging",
+      "repo":"gitlab_repo",
+      "path":"path_to_server_project_directory",
+      "ssh_options":["StrictHostKeyChecking=no","PasswordAuthentication=no"],
+      "pre-setup":"echo 'This is a local executed command'",
+      "post-setup":"ls -la && source ~/.nvm/nvm.sh && source ~/.profile && node -v  && nvm use 20.11.0 && pwd && npm install && npm i -g @nestjs/cli && cp .env.staging .env && npm run build && pm2 start pm2-app.json --only boilerplate-api-staging",
+      "pre-deploy-local":"echo 'This is a local executed command'",
+      "post-deploy":"ls -la && source ~/.nvm/nvm.sh && source ~/.profile && node -v && nvm use 20.11.0 && pwd && npm install && cp .env.staging .env && npm run build && pm2 stop 'boilerplate-api-staging' && pm2 delete 'boilerplate-api-staging' && pm2 start pm2-app.json --only boilerplate-api-staging",
+      "env":{"NODE_ENV":"staging"}
+    },
+    "production":{
+      "user":"server_user",
+      "key": "path_to_local_ssh_key",
+      "host":["server_ip"],
+      "ref":"origin/staging",
+      "repo":"gitlab_repo",
+      "path":"path_to_server_project_directory",
+      "ssh_options":["StrictHostKeyChecking=no","PasswordAuthentication=no"],
+      "pre-setup":"echo 'This is a local executed command'",
+      "post-setup":"ls -la && source ~/.nvm/nvm.sh && source ~/.profile && node -v  && nvm use 20.11.0 && pwd && npm install && npm i -g @nestjs/cli && cp .env.production .env && npm run typeorm:run-migrations && npm run seed && npm run build && pm2 start pm2-app.json --only boilerplate-api-production",
+      "pre-deploy-local":"echo 'This is a local executed command'",
+      "post-deploy":"ls -la && source ~/.nvm/nvm.sh && source ~/.profile && node -v && nvm use 20.11.0 && pwd && npm install && cp .env.production .env && npm run typeorm:run-migrations && npm run seed && npm run build && pm2 stop 'raffles-life-api-production' && pm2 delete 'boilerplate-api-production' && pm2 start pm2-app.json --only boilerplate-api-production",
+      "env":{"NODE_ENV":"production"}
+    }
+  }
+}

@@ -1,0 +1,87 @@
+default:
+  image: node:20.11.0
+stages:
+  - test
+  - deploy_staging
+  - deploy_prod
+
+test_build:
+  stage: test
+  image: node:20.11.0
+  script:
+    - npm cache clean --force
+    # uncomment for puppeter
+    # - export PUPPETEER_SKIP_DOWNLOAD='true'
+    - npm install
+    - npm run lint
+    - npm run build
+    # uncomment for running tests
+    # - npm run test-in-band
+    - echo "the project directory is - $CI_PROJECT_DIR - $PWD"
+    - echo "Finish Success"
+  only:
+    refs:
+      - develop
+
+deploy_staging_ssh:
+  stage: deploy_staging
+  image: keymetrics/pm2:6
+  script:
+    - echo "====== Deploy to test server ======"
+    - apk update && apk upgrade
+    - apk add git openssh bash
+    # Add target server`s secret key
+    - mkdir ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "$G_W_TEST_SERVER_DEPLOY_USER@$G_W_TEST_TARGET_SERVER_HOST "
+    #   decode key base64 --wrap=0 wetelo_f_deploy > ~/.ssh/wf_id_rsa_deploy_base64
+    # macOS base64 -i wetelo_user/wetelo_user -o ~/.ssh/wu_deploy_base64
+    - echo $G_W_TEST_SERVER_SK_BASE64 | base64 -d > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
+    - echo "Test ssh connection"
+    - ls -al
+    # - ssh -i ~/.ssh/id_rsa -T "$G_W_TEST_SERVER_DEPLOY_USER@$G_W_TEST_TARGET_SERVER_HOST"
+    - ssh -o StrictHostKeyChecking=no -T "$G_W_TEST_SERVER_DEPLOY_USER@$G_W_TEST_TARGET_SERVER_HOST"
+    # Delploy /mnt/wetelo_develop/construisons/api
+    - echo "Setup target server directories"
+    - echo "$PWD"
+    #    - pm2 deploy ecosystem.config.js production setup 2>&1 || true
+    - echo "make deploy staging"
+    - pm2 deploy pm2-app.json staging
+    - echo "FINISH"
+
+  environment:
+    name: deploying
+  only:
+    - staging
+
+deploy_prod_ssh:
+  stage: deploy_prod
+  image: keymetrics/pm2:6
+  script:
+    - echo "====== Deploy to prod server ======"
+    - apk update && apk upgrade
+    - apk add git openssh bash
+    # Add target server`s secret key
+    - mkdir ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "$G_W_PROD_SERVER_DEPLOY_USER@$G_W_PROD_TARGET_SERVER_HOST "
+    #   decode key base64 --wrap=0 wetelo_f_deploy > ~/.ssh/wf_id_rsa_deploy_base64
+    # macOS base64 -i wetelo_user/wetelo_user -o ~/.ssh/wu_deploy_base64
+    - echo $G_W_PROD_SERVER_SK_BASE64 | base64 -d > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
+    - echo "Test ssh connection"
+    - ls -al
+    # - ssh -i ~/.ssh/id_rsa -T "$G_W_TEST_SERVER_DEPLOY_USER@$G_W_TEST_TARGET_SERVER_HOST"
+    - ssh -o StrictHostKeyChecking=no -T "$G_W_PROD_SERVER_DEPLOY_USER@$G_W_PROD_TARGET_SERVER_HOST"
+    # Delploy /mnt/wetelo_develop/construisons/api
+    - echo "Setup target server directories"
+    - echo "$PWD"
+    #    - pm2 deploy ecosystem.config.js production setup 2>&1 || true
+    - echo "make deploy production"
+    - pm2 deploy pm2-app.json production
+    - echo "FINISH"
+  environment:
+    name: deploying
+  only:
+    - main
