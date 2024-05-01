@@ -4,9 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { TemplatesService } from './templates.service';
-import {
-  IReceiver,
-} from '../interfaces/receiver.interface';
+import { IReceiver } from '../interfaces/receiver.interface';
 import { ConfigService } from '@nestjs/config';
 import { CONFIG } from '../../common/constants/config';
 import { ADDITIONAL_PROVIDERS } from '../../common/constants/additional-providers';
@@ -28,12 +26,12 @@ export class MailService {
   private ADMIN_EMAIL = this.configService.get(CONFIG.ADMIN_EMAIL);
 
   async send(data: MailDataRequired) {
-   try {
+    try {
       await this.transporter.send(data);
     } catch (error) {
       this.loggerService.error(error);
       throw new InternalServerErrorException();
-   }
+    }
   }
 
   async sendVerification({
