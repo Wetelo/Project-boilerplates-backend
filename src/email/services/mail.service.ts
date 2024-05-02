@@ -4,7 +4,6 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { TemplatesService } from './templates.service';
-import { IReceiver } from '../interfaces/receiver.interface';
 import { ConfigService } from '@nestjs/config';
 import { CONFIG } from '../../common/enums/config';
 import { ADDITIONAL_PROVIDERS } from '../../common/enums/additional-providers';
@@ -14,6 +13,9 @@ import { SendgridType } from '../types/sendgrid.type';
 
 @Injectable()
 export class MailService {
+  private readonly forgotPasswordUrl = this.configService.get<string>(
+    CONFIG.FORGOT_PASSWORD_URL,
+  );
   constructor(
     @Inject(ADDITIONAL_PROVIDERS.SENDGRID)
     private readonly transporter: SendgridType,
@@ -34,21 +36,15 @@ export class MailService {
     }
   }
 
-  async sendVerification({
-    email,
-    name,
-    code,
-    expirationAfterMinutes,
-  }: IReceiver) {
-    const buildTemplate = this.templatesService.getTemplate('verificationHtml');
-    const link = '';
-    const html = buildTemplate<
-      Pick<IReceiver, 'code' | 'expirationAfterMinutes' | 'name' | 'link'>
-    >({ name, code, link, expirationAfterMinutes });
+  async sendForgotPassword({ email, name, code }) {
+    const buildTemplate =
+      this.templatesService.getTemplate('forgotPasswordHtml');
+    const url = `${this.forgotPasswordUrl}?code=${code}&email=${email}`;
+    const html = buildTemplate({ name, link: url });
     await this.send({
       from: this.SENDER,
       to: email,
-      subject: '',
+      subject: 'Reset password',
       html,
     });
   }

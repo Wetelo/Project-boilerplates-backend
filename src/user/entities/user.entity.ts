@@ -31,6 +31,9 @@ export class User {
   @Column({ nullable: true })
   public password: string;
 
+  @Column({ default: true })
+  public status: boolean;
+
   @JoinColumn({ name: 'avatar_file_id', referencedColumnName: 'id' })
   @OneToOne(() => FileEntity, {
     orphanedRowAction: 'delete',

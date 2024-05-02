@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { MailService } from '../services/mailing.service';
+import { MailService } from '../services/mail.service';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
 @Controller('mail')

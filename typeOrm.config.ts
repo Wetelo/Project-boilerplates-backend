@@ -10,6 +10,7 @@ import { CreateUser1714493291084 } from './migrations/1714493291084-create_user'
 import { CreateLog1714494159359 } from './migrations/1714494159359-create_log';
 import { FileEntity } from './src/file/entities/file.entity';
 import { AddFileEntity1714564472204 } from './migrations/1714564472204-add_file_entity';
+import { AddStatusToUser1714661688778 } from './migrations/1714661688778-add_status_to_user';
 
 config();
 const configService = new ConfigService();
@@ -26,6 +27,7 @@ const options: DataSourceOptions & SeederOptions = {
     CreateUser1714493291084,
     CreateLog1714494159359,
     AddFileEntity1714564472204,
+    AddStatusToUser1714661688778,
   ],
   seeds: [MainSeeder],
 };

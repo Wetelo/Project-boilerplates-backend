@@ -1,7 +1,7 @@
-import { verificationHtml } from './verification';
+import { forgotPasswordHtml } from './reset-password';
 
 const templatesList = {
-  verificationHtml,
+  forgotPasswordHtml,
 };
 
 export type templateName = keyof typeof templatesList;
