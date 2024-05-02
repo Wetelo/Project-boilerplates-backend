@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service';
 import { LoginDto } from '../../common/dto/login.dto';
@@ -37,10 +44,7 @@ export class AuthController {
   //@ResetPasswordApiDocs()
   @HttpCode(HttpStatus.OK)
   @Post('reset-password')
-  async resetPassword(
-    @Body() body: ResetPasswordDto,
-    @Res() res: Response,
-  ) {
+  async resetPassword(@Body() body: ResetPasswordDto, @Res() res: Response) {
     const token = await this.authService.resetPassword(body);
     res
       .set({
