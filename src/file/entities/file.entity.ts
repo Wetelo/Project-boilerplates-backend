@@ -2,8 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class FileEntity {
@@ -19,4 +21,9 @@ export class FileEntity {
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
   public createdAt: Date;
+
+  @OneToOne(() => User, (user) => user.avatar, {
+    cascade: ['insert', 'update'],
+  })
+  user: User;
 }

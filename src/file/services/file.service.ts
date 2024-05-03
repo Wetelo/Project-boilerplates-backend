@@ -19,6 +19,7 @@ export class FileService {
   ) {}
 
   async saveFile(file: Express.Multer.File) {
+    //implement also for array of files if need in for of or with Promise.all()
     const fileEntity = await this.fileRepository.findOne({
       where: { fileName: file.filename },
     });
@@ -38,10 +39,16 @@ export class FileService {
     };
   }
 
-  async getFile(id) {
+  async getFile(id: number, userId: number) {
     const file = await this.fileRepository.findOne({
       where: {
         id,
+        user: {
+          id: userId,
+        },
+      },
+      relations: {
+        user: true,
       },
     });
     if (!file) {
@@ -52,10 +59,16 @@ export class FileService {
     // return await this.fileS3.downloadFile(file.fileName);
   }
 
-  async deleteFile(id) {
+  async deleteFile(id: number, userId: number) {
     const file = await this.fileRepository.findOne({
       where: {
         id,
+        user: {
+          id: userId,
+        },
+      },
+      relations: {
+        user: true,
       },
     });
     if (!file) {
