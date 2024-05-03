@@ -3,10 +3,10 @@ import {
   Delete,
   Get,
   HttpStatus,
+  Param,
   ParseFilePipeBuilder,
   ParseIntPipe,
   Post,
-  Query,
   Res,
   UploadedFile,
   UseGuards,
@@ -76,7 +76,7 @@ export class FileController {
   @Get('/:id')
   @UseGuards(JwtAuthGuard, ActiveUserGuard)
   async getFile(
-    @Query('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
     @GetJwtPayload() { id: userId }: JwtPayload,
   ) {
@@ -92,7 +92,7 @@ export class FileController {
   @Delete('/:id')
   @UseGuards(JwtAuthGuard, ActiveUserGuard)
   async deleteFile(
-    @Query('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: number,
     @GetJwtPayload() { id: userId }: JwtPayload,
   ) {
     return await this.fileLocal.deleteFile(id, userId);
