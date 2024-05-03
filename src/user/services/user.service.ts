@@ -16,6 +16,8 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { FileEntity } from '../../file/entities/file.entity';
 import { UpdatePasswordDto } from '../dto/update-password.dto';
 import { UpdateUserResponseDto } from '../dto/responses/update-user-response.dto';
+import { GetUserResponseDto } from '../dto/responses/get-user-response.dto';
+import { FileService } from '../../file/services/file.service';
 
 @Injectable()
 export class UserService {
@@ -27,6 +29,7 @@ export class UserService {
     private readonly mailService: MailService,
     @InjectRepository(FileEntity)
     private readonly fileRepository: Repository<FileEntity>,
+    private readonly fileService: FileService,
   ) {}
 
   async setNewUserPassword(newPassword: string, userId: number) {
@@ -78,6 +81,8 @@ export class UserService {
         throw new NotFoundException('File not found');
       }
       user.avatar = file;
+      //delete old avatar
+      await this.fileService.deleteFile(file.id, user.id);
     }
     Object.assign<User, Partial<User>>(user, updateDto);
     await this.userRepository.save(user);
@@ -87,7 +92,7 @@ export class UserService {
     };
   }
 
-  public async updatePassword(
+  async updatePassword(
     userId: number,
     { newPassword, currentPassword }: UpdatePasswordDto,
   ): Promise<void> {
@@ -98,5 +103,23 @@ export class UserService {
       throw new BadRequestException('Invalid password');
     }
     await this.setNewUserPassword(newPassword, user.id);
+  }
+
+  async getProfile(id): Promise<GetUserResponseDto> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: { avatar: true },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone,
+      avatarFileId: user.avatar.id,
+    };
   }
 }

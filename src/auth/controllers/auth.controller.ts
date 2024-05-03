@@ -14,6 +14,10 @@ import { Response } from 'express';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { ForgotPasswordEmailDto } from '../dto/forgot-password-email.dto';
 import { UserService } from '../../user/services/user.service';
+import { ResetPasswordApiDocs } from '../docs/reset-password.decorator';
+import { ForgotPasswordApiDocs } from '../docs/forgot-password.decorator';
+import { RegisterApiDocs } from '../docs/register.decorator';
+import { LoginApiDocs } from '../docs/login.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -23,6 +27,7 @@ export class AuthController {
     private readonly userService: UserService,
   ) {}
 
+  @LoginApiDocs()
   @Post('/login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
@@ -35,13 +40,14 @@ export class AuthController {
     res.json(response).end();
   }
 
+  @RegisterApiDocs()
   @Post('/register')
   @HttpCode(HttpStatus.OK)
   async register(@Body() registerDto: RegisterDto) {
     return await this.authService.register(registerDto);
   }
 
-  //@ResetPasswordApiDocs()
+  @ResetPasswordApiDocs()
   @HttpCode(HttpStatus.OK)
   @Post('reset-password')
   async resetPassword(@Body() body: ResetPasswordDto, @Res() res: Response) {
@@ -54,7 +60,7 @@ export class AuthController {
       .end();
   }
 
-  //@ForgotPasswordApiDocs()
+  @ForgotPasswordApiDocs()
   @HttpCode(HttpStatus.OK)
   @Post('forgot-password')
   async forgotPassword(@Body() { email }: ForgotPasswordEmailDto) {

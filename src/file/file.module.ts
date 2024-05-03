@@ -11,5 +11,6 @@ import { User } from '../user/entities/user.entity';
   imports: [TypeOrmModule.forFeature([FileEntity, User]), LoggerModule],
   controllers: [FileController],
   providers: [FileService, FileS3Service],
+  exports: [FileService],
 })
 export class FileModule {}

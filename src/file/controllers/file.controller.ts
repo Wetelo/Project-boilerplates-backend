@@ -23,12 +23,16 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { ActiveUserGuard } from '../../auth/guards/active-user.guard';
 import { GetJwtPayload } from '../../utils/decorators/jwt-payload.decorator';
 import { JwtPayload } from '../../common/types/jwt-payload.type';
+import { UploadFileApiDocs } from '../docs/upload-file.decorator';
+import { GetFileApiDocs } from '../docs/get-file.decorator';
+import { DeleteFileApiDocs } from '../docs/delete-file.decorator';
 
 @ApiTags('file')
 @Controller('file')
 export class FileController {
   constructor(private readonly fileLocal: FileService) {}
-  //TODO add apidoc
+
+  @UploadFileApiDocs()
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
@@ -68,6 +72,7 @@ export class FileController {
     return await this.fileLocal.saveFile(file);
   }
 
+  @GetFileApiDocs()
   @Get('/:id')
   @UseGuards(JwtAuthGuard, ActiveUserGuard)
   async getFile(
@@ -83,6 +88,7 @@ export class FileController {
     // return await this.fileLocal.getFile(id);
   }
 
+  @DeleteFileApiDocs()
   @Delete('/:id')
   @UseGuards(JwtAuthGuard, ActiveUserGuard)
   async deleteFile(

@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import fs from 'fs';
 import { UPLOAD_FILE_PATH } from '../../common/constants/file';
+import { RemoveFileResponseDto } from '../dto/responses/remove-file-response.dto';
 //import { FileS3Service } from './file-s3.service';
 
 @Injectable()
@@ -59,7 +60,7 @@ export class FileService {
     // return await this.fileS3.downloadFile(file.fileName);
   }
 
-  async deleteFile(id: number, userId: number) {
+  async deleteFile(id: number, userId: number): Promise<RemoveFileResponseDto> {
     const file = await this.fileRepository.findOne({
       where: {
         id,
@@ -81,5 +82,8 @@ export class FileService {
     //delete from S3
     //await this.fileS3.removeFile(file.fileName);
     await this.fileRepository.delete({ id });
+    return {
+      message: 'File was successfully deleted',
+    };
   }
 }
