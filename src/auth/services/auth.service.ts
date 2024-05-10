@@ -22,6 +22,9 @@ import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { UserService } from '../../user/services/user.service';
 import { UserVerificationService } from '../../user/services/user-verification.service';
 import { HASH_ROUNDS } from '../../common/constants/auth';
+import { ConfigService } from '@nestjs/config';
+import { CONFIG } from '../../common/enums/config';
+import { RefreshTokenCookieDto } from '../dto/refresh-token-cookie.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +34,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
     @Inject(LIBS.BCRYPT) private readonly bcryptLib: bcrypt,
     private readonly userService: UserService,
     private readonly userVerificationService: UserVerificationService,
@@ -39,6 +43,14 @@ export class AuthService {
   async login({ email, password }: LoginDto): Promise<LoginResponseDto> {
     const user = await this.checkLoginCredentials({ email, password });
     const token = await this.generateToken(user);
+    const refreshTokenCookie = await this.getCookieWithJwtRefreshToken({
+      id: user.id,
+      role: user.role,
+    });
+    await this.userService.setCurrentRefreshToken(
+      refreshTokenCookie.token,
+      user.id,
+    );
     return {
       email: user.email,
       phone: user.phone,
@@ -46,6 +58,7 @@ export class AuthService {
       lastName: user.lastName,
       id: user.id,
       token,
+      refreshTokenCookie,
     };
   }
 
@@ -58,6 +71,23 @@ export class AuthService {
       signOptions,
     );
     return token;
+  }
+
+  async getCookieWithJwtRefreshToken(
+    payload: JwtPayload,
+  ): Promise<RefreshTokenCookieDto> {
+    const tokenExpireTimeDays = `${this.configService.get(CONFIG.JWT_REFRESH_TOKEN_EXPIRATION_TIME)}d`;
+    const token = await this.generateToken(payload, {
+      secret: this.configService.get(CONFIG.JWT_REFRESH_TOKEN_SECRET),
+      expiresIn: tokenExpireTimeDays,
+    });
+    const cookieExpireTimeSeconds: number =
+      parseInt(tokenExpireTimeDays) * 24 * 3600; // convert day to seconds
+    const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${cookieExpireTimeSeconds}`;
+    return {
+      cookie,
+      token,
+    };
   }
 
   async register(registerDto: RegisterDto): Promise<RegisterResponseDto> {
@@ -127,5 +157,9 @@ export class AuthService {
     await this.userService.setNewUserPassword(newPassword, resetCode.user.id);
     await this.userVerificationService.deleteCode(resetCode);
     return this.generateToken(resetCode.user);
+  }
+
+  getCookiesForLogOut() {
+    return ['Refresh=; HttpOnly; Path=/; Max-Age=0'];
   }
 }

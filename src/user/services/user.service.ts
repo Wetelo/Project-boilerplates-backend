@@ -37,6 +37,16 @@ export class UserService {
     await this.userRepository.update({ id: userId }, { password });
   }
 
+  async setCurrentRefreshToken(refreshToken: string, userId: number) {
+    const currentHashedRefreshToken = await this.bcryptLib.hash(
+      refreshToken,
+      HASH_ROUNDS,
+    );
+    await this.userRepository.update(userId, {
+      currentHashedRefreshToken,
+    });
+  }
+
   async sendForgotPasswordCode(email: string) {
     const user: User = await this.userRepository.findOne({ where: { email } });
     if (!user) {
@@ -121,5 +131,30 @@ export class UserService {
       phone: user.phone,
       avatarFileId: user.avatar.id,
     };
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isRefreshTokenMatching = await this.bcryptLib.compare(
+      refreshToken,
+      user.currentHashedRefreshToken,
+    );
+    if (isRefreshTokenMatching) {
+      return {
+        id: user.id,
+      };
+    }
+  }
+
+  async removeRefreshToken(userId: number) {
+    return this.userRepository.update(userId, {
+      currentHashedRefreshToken: null,
+    });
   }
 }

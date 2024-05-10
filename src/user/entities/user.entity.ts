@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { UserRoleEnum } from '../../common/enums/user-role.enum';
 import { FileEntity } from '../../file/entities/file.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -48,6 +49,12 @@ export class User {
     default: UserRoleEnum.USER,
   })
   public role: UserRoleEnum;
+
+  @Column({
+    nullable: true,
+  })
+  @Exclude()
+  public currentHashedRefreshToken?: string;
 
   @CreateDateColumn({
     name: 'created_at',

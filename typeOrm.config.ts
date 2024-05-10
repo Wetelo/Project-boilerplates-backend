@@ -13,6 +13,7 @@ import { AddFileEntity1714564472204 } from './migrations/1714564472204-add_file_
 import { AddStatusToUser1714661688778 } from './migrations/1714661688778-add_status_to_user';
 import { UserVerification } from './src/user/entities/user-verification.entity';
 import { AddUserVerification1714686851253 } from './migrations/1714686851253-add_user_verification';
+import { AddRefreshToken1715180605959 } from './migrations/1715180605959-add_refresh_token';
 
 config();
 const configService = new ConfigService();
@@ -31,6 +32,7 @@ const options: DataSourceOptions & SeederOptions = {
     AddFileEntity1714564472204,
     AddStatusToUser1714661688778,
     AddUserVerification1714686851253,
+    AddRefreshToken1715180605959,
   ],
   seeds: [MainSeeder],
 };

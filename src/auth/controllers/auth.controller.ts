@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Post,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service';
@@ -18,6 +19,14 @@ import { ResetPasswordApiDocs } from '../docs/reset-password.decorator';
 import { ForgotPasswordApiDocs } from '../docs/forgot-password.decorator';
 import { RegisterApiDocs } from '../docs/register.decorator';
 import { LoginApiDocs } from '../docs/login.decorator';
+import { JwtRefreshGuard } from '../guards/jwt-refresh.guard';
+import { GetJwtPayload } from '../../utils/decorators/jwt-payload.decorator';
+import { JwtPayload } from '../../common/types/jwt-payload.type';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { ActiveUserGuard } from '../guards/active-user.guard';
+import { GetRefreshApiDocs } from '../../user/docs/get-refresh.decorator';
+import { GetRefreshDto } from '../../user/dto/responses/get-refresh.dto';
+import { GetLogoutApiDocs } from '../../user/docs/logout.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -32,18 +41,26 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const response = await this.authService.login(loginDto);
-    if (response.token) {
-      res.set({
-        Authorization: response.token,
-      });
-    }
+    res.setHeader('Set-Cookie', [response.refreshTokenCookie.cookie]);
+    delete response.refreshTokenCookie;
     res.json(response).end();
+  }
+
+  @GetRefreshApiDocs()
+  @UseGuards(JwtAuthGuard, ActiveUserGuard, JwtRefreshGuard)
+  @Post('refresh')
+  async refresh(@GetJwtPayload() user: JwtPayload): Promise<GetRefreshDto> {
+    const token = await this.authService.generateToken(user);
+    return {
+      token,
+    };
   }
 
   @RegisterApiDocs()
   @Post('/register')
   @HttpCode(HttpStatus.OK)
   async register(@Body() registerDto: RegisterDto) {
+    //TODO fix with refresh
     return await this.authService.register(registerDto);
   }
 
@@ -52,6 +69,7 @@ export class AuthController {
   @Post('reset-password')
   async resetPassword(@Body() body: ResetPasswordDto, @Res() res: Response) {
     const token = await this.authService.resetPassword(body);
+    //TODO fix with refresh
     res
       .set({
         Authorization: token,
@@ -65,5 +83,14 @@ export class AuthController {
   @Post('forgot-password')
   async forgotPassword(@Body() { email }: ForgotPasswordEmailDto) {
     return this.userService.sendForgotPasswordCode(email);
+  }
+
+  @GetLogoutApiDocs()
+  @HttpCode(HttpStatus.OK)
+  @Post('log-out')
+  @UseGuards(JwtAuthGuard)
+  async logOut(@GetJwtPayload() user: JwtPayload, @Res() res: Response) {
+    await this.userService.removeRefreshToken(user.id);
+    res.setHeader('Set-Cookie', this.authService.getCookiesForLogOut());
   }
 }
