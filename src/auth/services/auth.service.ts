@@ -90,7 +90,9 @@ export class AuthService {
     };
   }
 
-  async register(registerDto: RegisterDto): Promise<RegisterResponseDto> {
+  async register(
+    registerDto: RegisterDto,
+  ): Promise<RegisterResponseDto & { refreshTokenCookie: string }> {
     const existedUser = await this.userRepository.findOne({
       where: {
         email: registerDto.email,
@@ -110,13 +112,22 @@ export class AuthService {
       registerDto.password,
       HASH_ROUNDS,
     );
+    const token: string = await this.generateToken(user);
+    const refreshTokenCookie = await this.getCookieWithJwtRefreshToken({
+      id: user.id,
+      role: user.role,
+    });
+    user.currentHashedRefreshToken = refreshTokenCookie.token;
     await this.userRepository.save(user);
+
     return {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
       phone: user.phone,
       id: user.id,
+      token,
+      refreshTokenCookie: refreshTokenCookie.cookie,
     };
   }
 
@@ -154,9 +165,23 @@ export class AuthService {
         email,
         code,
       });
-    await this.userService.setNewUserPassword(newPassword, resetCode.user.id);
+    const user = resetCode.user;
+    await this.userService.setNewUserPassword(newPassword, user.id);
     await this.userVerificationService.deleteCode(resetCode);
-    return this.generateToken(resetCode.user);
+    const token: string = await this.generateToken(user);
+    const refreshTokenCookie = await this.getCookieWithJwtRefreshToken({
+      id: user.id,
+      role: user.role,
+    });
+    await this.userService.setCurrentRefreshToken(
+      refreshTokenCookie.token,
+      user.id,
+    );
+
+    return {
+      token,
+      refreshTokenCookie,
+    };
   }
 
   getCookiesForLogOut() {

@@ -15,4 +15,7 @@ export class RegisterResponseDto {
 
   @ApiProperty()
   id: number;
+
+  @ApiProperty()
+  token: string;
 }

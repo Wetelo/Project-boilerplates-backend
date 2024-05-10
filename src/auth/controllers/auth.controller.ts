@@ -59,23 +59,20 @@ export class AuthController {
   @RegisterApiDocs()
   @Post('/register')
   @HttpCode(HttpStatus.OK)
-  async register(@Body() registerDto: RegisterDto) {
-    //TODO fix with refresh
-    return await this.authService.register(registerDto);
+  async register(@Body() registerDto: RegisterDto, @Res() res: Response) {
+    const response = await this.authService.register(registerDto);
+    res.setHeader('Set-Cookie', [response.refreshTokenCookie]);
+    delete response.refreshTokenCookie;
+    res.json(response).end();
   }
 
   @ResetPasswordApiDocs()
   @HttpCode(HttpStatus.OK)
   @Post('reset-password')
   async resetPassword(@Body() body: ResetPasswordDto, @Res() res: Response) {
-    const token = await this.authService.resetPassword(body);
-    //TODO fix with refresh
-    res
-      .set({
-        Authorization: token,
-      })
-      .json({ message: 'Success', token })
-      .end();
+    const response = await this.authService.resetPassword(body);
+    res.setHeader('Set-Cookie', [response.refreshTokenCookie.cookie]);
+    res.json({ token: response.token }).end();
   }
 
   @ForgotPasswordApiDocs()
