@@ -129,7 +129,7 @@ export class UserService {
       lastName: user.lastName,
       email: user.email,
       phone: user.phone,
-      avatarFileId: user.avatar.id,
+      avatarFileId: user.avatar?.id,
     };
   }
 

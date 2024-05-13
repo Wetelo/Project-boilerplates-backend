@@ -5,10 +5,12 @@ import { AdminUserController } from './controllers/admin-user.controller';
 import { AdminUserService } from './services/admin-user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
+import { AdminAuthService } from './services/admin-auth.service';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([User])],
+  imports: [AuthModule, TypeOrmModule.forFeature([User]), UserModule],
   controllers: [AdminAuthController, AdminUserController],
-  providers: [AdminUserService],
+  providers: [AdminUserService, AdminAuthService],
 })
 export class AdminModule {}

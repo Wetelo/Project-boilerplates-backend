@@ -76,9 +76,9 @@ export class AuthService {
   async getCookieWithJwtRefreshToken(
     payload: JwtPayload,
   ): Promise<RefreshTokenCookieDto> {
-    const tokenExpireTimeDays = `${this.configService.get(CONFIG.JWT_REFRESH_TOKEN_EXPIRATION_TIME)}d`;
+    const tokenExpireTimeDays = `${this.configService.get(CONFIG.JWT_REFRESH_EXPIRATION_TIME)}d`;
     const token = await this.generateToken(payload, {
-      secret: this.configService.get(CONFIG.JWT_REFRESH_TOKEN_SECRET),
+      secret: this.configService.get(CONFIG.JWT_REFRESH_SECRET),
       expiresIn: tokenExpireTimeDays,
     });
     const cookieExpireTimeSeconds: number =
