@@ -8,6 +8,14 @@ import { appendFileSync } from 'fs';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.enableCors({
+    origin: process.env.CORS
+      ? [process.env.ADMIN_PANEL_DOMAIN, process.env.PUBLIC_WEBSITE_DOMAIN]
+      : function (origin, callback) {
+          return callback(null, true);
+        },
+    credentials: true,
+  });
   const config = new DocumentBuilder()
     .setDescription('Boilerplate API documentation')
     .addBearerAuth(
