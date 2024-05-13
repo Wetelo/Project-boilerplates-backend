@@ -18,6 +18,10 @@ import { UpdatePasswordDto } from '../dto/update-password.dto';
 import { UpdateUserResponseDto } from '../dto/responses/update-user-response.dto';
 import { GetUserResponseDto } from '../dto/responses/get-user-response.dto';
 import { FileService } from '../../file/services/file.service';
+import { UpdatePhoneDto } from '../dto/update-phone.dto';
+import { UpdateEmailDto } from '../dto/update-email.dto';
+import { ChangePhoneResponseDto } from '../dto/responses/change-phone-response.dto';
+import { ChangeEmailResponseDto } from '../dto/responses/change-email-response.dto';
 
 @Injectable()
 export class UserService {
@@ -74,15 +78,6 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const existUser = await this.userRepository.findOne({
-      where: {
-        email: updateDto.email,
-        id: Not(id),
-      },
-    });
-    if (existUser) {
-      throw new BadRequestException('User with such email already exist');
-    }
     if (updateDto.avatarFileId) {
       const file = await this.fileRepository.findOne({
         where: { id: updateDto.avatarFileId },
@@ -99,6 +94,8 @@ export class UserService {
     return {
       id: user.id,
       ...updateDto,
+      email: user.email,
+      phone: user.phone,
     };
   }
 
@@ -156,5 +153,77 @@ export class UserService {
     return this.userRepository.update(userId, {
       currentHashedRefreshToken: null,
     });
+  }
+
+  async sendVerifyCode(id: number) {
+    const user: User = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const { code } =
+      await this.userVerificationService.getVerificationCode(user);
+    await this.mailService.sendVerifyCode({
+      email: user.email,
+      name: user.firstName + user.lastName,
+      code,
+    });
+    return {
+      success: true,
+    };
+  }
+
+  async changeEmail(
+    { email, code }: UpdateEmailDto,
+    id: number,
+  ): Promise<ChangeEmailResponseDto> {
+    const user: User = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const existUser = await this.userRepository.findOne({
+      where: {
+        email: email,
+        id: Not(id),
+      },
+    });
+    if (existUser) {
+      throw new BadRequestException('User with such email already exist');
+    }
+    await this.userVerificationService.validateVerificationCode({
+      email,
+      code,
+    });
+    await this.userRepository.update({ id }, { email });
+    return {
+      email,
+    };
+  }
+
+  async changePhone(
+    { phone, code }: UpdatePhoneDto,
+    id: number,
+  ): Promise<ChangePhoneResponseDto> {
+    const user: User = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    //uncomment if need to check phone for unique
+    // const existUser = await this.userRepository.findOne({
+    //   where: {
+    //     phone: phone,
+    //     id: Not(id),
+    //   },
+    // });
+    // if (phone) {
+    //   throw new BadRequestException('User with such phone already exist');
+    // }
+    await this.userVerificationService.validateVerificationCode({
+      email: user.email,
+      code,
+    });
+    await this.userRepository.update({ id }, { phone });
+    return {
+      phone,
+    };
   }
 }

@@ -4,6 +4,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
+  Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +20,11 @@ import { UpdatePasswordDto } from '../dto/update-password.dto';
 import { UpdateProfileApiDocs } from '../docs/update-profile.decorator';
 import { UpdatePasswordApiDocs } from '../docs/update-password.decorator';
 import { GetProfileApiDocs } from '../docs/get-profile.decorator';
+import { UpdateEmailDto } from '../dto/update-email.dto';
+import { UpdatePhoneDto } from '../dto/update-phone.dto';
+import { ChangeEmailApiDocs } from '../docs/change-email.decorator';
+import { ChangePhoneApiDocs } from '../docs/change-phone.decorator';
+import { ChangeDataVerifyCodeApiDocs } from '../docs/change-data-verify-code.decorator';
 
 @ApiTags('user')
 @Controller('user')
@@ -33,6 +40,38 @@ export class UserController {
     @GetJwtPayload() { id: userId }: JwtPayload,
   ) {
     return await this.userService.updateUser(updateDto, userId);
+  }
+
+  @ChangeDataVerifyCodeApiDocs()
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, ActiveUserGuard)
+  @Post('/change-data/verify-code')
+  async getVerifyCodeForEmailChanging(
+    @GetJwtPayload() { id: userId }: JwtPayload,
+  ) {
+    return await this.userService.sendVerifyCode(userId);
+  }
+
+  @ChangeEmailApiDocs()
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, ActiveUserGuard)
+  @Patch('email')
+  async changeEmail(
+    @Body() updateEmailDto: UpdateEmailDto,
+    @GetJwtPayload() { id: userId }: JwtPayload,
+  ) {
+    return await this.userService.changeEmail(updateEmailDto, userId);
+  }
+
+  @ChangePhoneApiDocs()
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, ActiveUserGuard)
+  @Patch('phone')
+  async changePhone(
+    @Body() updatePhoneDto: UpdatePhoneDto,
+    @GetJwtPayload() { id: userId }: JwtPayload,
+  ) {
+    return await this.userService.changePhone(updatePhoneDto, userId);
   }
 
   @UpdatePasswordApiDocs()

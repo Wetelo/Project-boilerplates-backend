@@ -49,6 +49,17 @@ export class MailService {
     });
   }
 
+  async sendVerifyCode({ email, name, code }) {
+    const buildTemplate = this.templatesService.getTemplate('verifyCodeHtml');
+    const html = buildTemplate({ name, code });
+    await this.send({
+      from: this.SENDER,
+      to: email,
+      subject: 'Verification code',
+      html,
+    });
+  }
+
   async sendTest(email) {
     await this.loggerService.debug({
       reason: 'Send email TEST debug',
