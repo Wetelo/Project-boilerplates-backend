@@ -83,7 +83,8 @@ export class AuthService {
     });
     const cookieExpireTimeSeconds: number =
       parseInt(tokenExpireTimeDays) * 24 * 3600; // convert day to seconds
-    const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${cookieExpireTimeSeconds}`;
+    const domain = this.configService.get(CONFIG.COOKIE_DOMAIN);
+    const cookie = `Refresh=${token}; HttpOnly=true; Secure=true; Domain=${domain}; SameSite=Strict; Path=/; Max-Age=${cookieExpireTimeSeconds}`;
     return {
       cookie,
       token,

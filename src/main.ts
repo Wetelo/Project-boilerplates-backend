@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { join } from 'path';
 import { appendFileSync } from 'fs';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +17,7 @@ async function bootstrap() {
         },
     credentials: true,
   });
+  app.use(cookieParser());
   const config = new DocumentBuilder()
     .setDescription('Boilerplate API documentation')
     .addBearerAuth(

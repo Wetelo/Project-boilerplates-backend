@@ -1,8 +1,10 @@
 import {
   Body,
-  Controller,
+  Controller, Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
   Post,
   Res,
   UseGuards,
@@ -23,7 +25,6 @@ import { JwtRefreshGuard } from '../guards/jwt-refresh.guard';
 import { GetJwtPayload } from '../../utils/decorators/jwt-payload.decorator';
 import { JwtPayload } from '../../common/types/jwt-payload.type';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { ActiveUserGuard } from '../guards/active-user.guard';
 import { GetRefreshApiDocs } from '../../user/docs/get-refresh.decorator';
 import { GetRefreshDto } from '../../user/dto/responses/get-refresh.dto';
 import { GetLogoutApiDocs } from '../../user/docs/logout.decorator';
@@ -47,8 +48,9 @@ export class AuthController {
   }
 
   @GetRefreshApiDocs()
-  @UseGuards(JwtAuthGuard, ActiveUserGuard, JwtRefreshGuard)
-  @Post('refresh')
+  @UseGuards(JwtRefreshGuard)
+  @Post('/refresh')
+  @HttpCode(HttpStatus.OK)
   async refresh(@GetJwtPayload() user: JwtPayload): Promise<GetRefreshDto> {
     const token = await this.authService.generateToken(user);
     return {

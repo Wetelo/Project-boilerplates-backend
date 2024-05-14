@@ -132,7 +132,7 @@ export class UserService {
 
   async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
     const user = await this.userRepository.findOne({
-      where: { id },
+      where: { id, deletedAt: null, status: true },
     });
     if (!user) {
       throw new NotFoundException('User not found');
