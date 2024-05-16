@@ -14,6 +14,9 @@ import { AddStatusToUser1714661688778 } from './migrations/1714661688778-add_sta
 import { UserVerification } from './src/user/entities/user-verification.entity';
 import { AddUserVerification1714686851253 } from './migrations/1714686851253-add_user_verification';
 import { AddRefreshToken1715180605959 } from './migrations/1715180605959-add_refresh_token';
+import { StaticPage } from './src/static-pages/entities/static-pages.entity';
+import { AddStaticPage1715779621743 } from './migrations/1715779621743-add_static_page';
+import { AddUniqueToTitle1715868471649 } from './migrations/1715868471649-add_unique_to_title';
 
 config();
 const configService = new ConfigService();
@@ -25,7 +28,7 @@ const options: DataSourceOptions & SeederOptions = {
   username: configService.get(CONFIG.POSTGRES_USER),
   password: configService.get(CONFIG.POSTGRES_PASSWORD),
   database: configService.get(CONFIG.POSTGRES_DB),
-  entities: [Log, User, FileEntity, UserVerification],
+  entities: [Log, User, FileEntity, UserVerification, StaticPage],
   migrations: [
     CreateUser1714493291084,
     CreateLog1714494159359,
@@ -33,6 +36,8 @@ const options: DataSourceOptions & SeederOptions = {
     AddStatusToUser1714661688778,
     AddUserVerification1714686851253,
     AddRefreshToken1715180605959,
+    AddStaticPage1715779621743,
+    AddUniqueToTitle1715868471649,
   ],
   seeds: [MainSeeder],
 };
