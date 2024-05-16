@@ -17,6 +17,8 @@ import { AddRefreshToken1715180605959 } from './migrations/1715180605959-add_ref
 import { StaticPage } from './src/static-pages/entities/static-pages.entity';
 import { AddStaticPage1715779621743 } from './migrations/1715779621743-add_static_page';
 import { AddUniqueToTitle1715868471649 } from './migrations/1715868471649-add_unique_to_title';
+import { StaticPageLang } from './src/static-pages/entities/static-pages-lang.entity';
+import { AddStaticPagesLang1715878559815 } from './migrations/1715878559815-add_static_pages_lang';
 
 config();
 const configService = new ConfigService();
@@ -28,7 +30,14 @@ const options: DataSourceOptions & SeederOptions = {
   username: configService.get(CONFIG.POSTGRES_USER),
   password: configService.get(CONFIG.POSTGRES_PASSWORD),
   database: configService.get(CONFIG.POSTGRES_DB),
-  entities: [Log, User, FileEntity, UserVerification, StaticPage],
+  entities: [
+    Log,
+    User,
+    FileEntity,
+    UserVerification,
+    StaticPage,
+    StaticPageLang,
+  ],
   migrations: [
     CreateUser1714493291084,
     CreateLog1714494159359,
@@ -38,6 +47,7 @@ const options: DataSourceOptions & SeederOptions = {
     AddRefreshToken1715180605959,
     AddStaticPage1715779621743,
     AddUniqueToTitle1715868471649,
+    AddStaticPagesLang1715878559815,
   ],
   seeds: [MainSeeder],
 };

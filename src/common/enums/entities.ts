@@ -4,4 +4,5 @@ export enum ENTITIES {
   FILE_ENTITY = 'FileEntity',
   USER_VERIFICATION = 'UserVerification',
   STATIC_PAGES = 'StaticPage',
+  STATIC_PAGE_LANG = 'StaticPageLang',
 }

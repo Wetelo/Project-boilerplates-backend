@@ -3,9 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { StaticPageLang } from './static-pages-lang.entity';
 
 @Entity()
 export class StaticPage {
@@ -48,4 +50,9 @@ export class StaticPage {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   public updatedAt: Date;
+
+  @OneToMany(() => StaticPageLang, (staticPageLang) => staticPageLang.page, {
+    cascade: ['insert', 'update'],
+  })
+  translations: StaticPageLang[];
 }
