@@ -51,11 +51,11 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Post('/refresh')
   @HttpCode(HttpStatus.OK)
-  async refresh(@GetJwtPayload() user: JwtPayload): Promise<GetRefreshDto> {
-    const token = await this.authService.generateToken(user);
-    return {
-      token,
-    };
+  async refresh(@GetJwtPayload() user: JwtPayload, @Res() res: Response) {
+    const response = await this.authService.refresh(user);
+    res.setHeader('Set-Cookie', [response.refreshTokenCookie.cookie]);
+    delete response.refreshTokenCookie;
+    res.json(response).end();
   }
 
   @RegisterApiDocs()

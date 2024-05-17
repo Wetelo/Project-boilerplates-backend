@@ -3,6 +3,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -62,6 +63,27 @@ export class AuthService {
     };
   }
 
+  async refresh({ id }: JwtPayload) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const token = await this.generateToken(user);
+    const refreshTokenCookie = await this.getCookieWithJwtRefreshToken({
+      id: user.id,
+      role: user.role,
+    });
+    await this.userService.setCurrentRefreshToken(
+      refreshTokenCookie.token,
+      user.id,
+    );
+    return {
+      token,
+      refreshTokenCookie,
+    };
+  }
   async generateToken({ id, role }: JwtPayload, signOptions?: JwtSignOptions) {
     const token = await this.jwtService.signAsync(
       {
