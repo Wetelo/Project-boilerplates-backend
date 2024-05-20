@@ -1,6 +1,7 @@
 import {
   Body,
-  Controller, Get,
+  Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -51,11 +52,11 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Post('/refresh')
   @HttpCode(HttpStatus.OK)
-  async refresh(@GetJwtPayload() user: JwtPayload): Promise<GetRefreshDto> {
-    const token = await this.authService.generateToken(user);
-    return {
-      token,
-    };
+  async refresh(@GetJwtPayload() user: JwtPayload, @Res() res: Response) {
+    const response = await this.authService.refresh(user);
+    res.setHeader('Set-Cookie', [response.refreshTokenCookie.cookie]);
+    delete response.refreshTokenCookie;
+    res.json(response).end();
   }
 
   @RegisterApiDocs()
@@ -90,6 +91,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async logOut(@GetJwtPayload() user: JwtPayload, @Res() res: Response) {
     await this.userService.removeRefreshToken(user.id);
-    res.setHeader('Set-Cookie', this.authService.getCookiesForLogOut());
+    res.clearCookie('Refresh');
+    res.json().end();
   }
 }
