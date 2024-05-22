@@ -25,6 +25,7 @@ import { UpdatePhoneDto } from '../dto/update-phone.dto';
 import { ChangeEmailApiDocs } from '../docs/change-email.decorator';
 import { ChangePhoneApiDocs } from '../docs/change-phone.decorator';
 import { ChangeDataVerifyCodeApiDocs } from '../docs/change-data-verify-code.decorator';
+import { ChangeEmailDto } from '../dto/change-email.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -45,8 +46,19 @@ export class UserController {
   @ChangeDataVerifyCodeApiDocs()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, ActiveUserGuard)
-  @Post('/change-data/verify-code')
+  @Post('/change-email/verify-code')
   async getVerifyCodeForEmailChanging(
+    @GetJwtPayload() { id: userId }: JwtPayload,
+    @Body() changeEmailDto: ChangeEmailDto,
+  ) {
+    return await this.userService.sendVerifyCode(userId, changeEmailDto.email);
+  }
+
+  @ChangeDataVerifyCodeApiDocs()
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, ActiveUserGuard)
+  @Post('/change-phone/verify-code')
+  async getVerifyCodeForPhoneChanging(
     @GetJwtPayload() { id: userId }: JwtPayload,
   ) {
     return await this.userService.sendVerifyCode(userId);

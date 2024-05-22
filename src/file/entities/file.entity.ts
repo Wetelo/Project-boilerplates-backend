@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -11,6 +12,10 @@ import { User } from '../../user/entities/user.entity';
 export class FileEntity {
   @PrimaryGeneratedColumn()
   public id: number;
+
+  @Column()
+  @Generated('uuid')
+  uuid: string;
 
   @Column({ unique: true, name: 'file_name' })
   public fileName: string;

@@ -87,7 +87,7 @@ export class UserService {
       }
       user.avatar = file;
       //delete old avatar
-      await this.fileService.deleteFile(file.id, user.id);
+      await this.fileService.deleteFile(file.uuid, user.id);
     }
     Object.assign<User, Partial<User>>(user, updateDto);
     await this.userRepository.save(user);
@@ -155,7 +155,7 @@ export class UserService {
     });
   }
 
-  async sendVerifyCode(id: number) {
+  async sendVerifyCode(id: number, email = null) {
     const user: User = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -163,7 +163,7 @@ export class UserService {
     const { code } =
       await this.userVerificationService.getVerificationCode(user);
     await this.mailService.sendVerifyCode({
-      email: user.email,
+      email: email ?? user.email,
       name: user.firstName + user.lastName,
       code,
     });

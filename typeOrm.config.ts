@@ -19,6 +19,7 @@ import { AddStaticPage1715779621743 } from './migrations/1715779621743-add_stati
 import { AddUniqueToTitle1715868471649 } from './migrations/1715868471649-add_unique_to_title';
 import { StaticPageLang } from './src/static-pages/entities/static-pages-lang.entity';
 import { AddStaticPagesLang1715878559815 } from './migrations/1715878559815-add_static_pages_lang';
+import { AddUuidForFile1716389764542 } from './migrations/1716389764542-add_uuid_for_file';
 
 config();
 const configService = new ConfigService();
@@ -48,6 +49,7 @@ const options: DataSourceOptions & SeederOptions = {
     AddStaticPage1715779621743,
     AddUniqueToTitle1715868471649,
     AddStaticPagesLang1715878559815,
+    AddUuidForFile1716389764542,
   ],
   seeds: [MainSeeder],
 };

@@ -1,10 +1,8 @@
 import {
   Body,
-  Controller, Get,
+  Controller,
   HttpCode,
   HttpStatus,
-  Param,
-  ParseIntPipe,
   Post,
   Res,
   UseGuards,
@@ -26,7 +24,6 @@ import { GetJwtPayload } from '../../utils/decorators/jwt-payload.decorator';
 import { JwtPayload } from '../../common/types/jwt-payload.type';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { GetRefreshApiDocs } from '../../user/docs/get-refresh.decorator';
-import { GetRefreshDto } from '../../user/dto/responses/get-refresh.dto';
 import { GetLogoutApiDocs } from '../../user/docs/logout.decorator';
 
 @ApiTags('auth')
@@ -51,11 +48,11 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Post('/refresh')
   @HttpCode(HttpStatus.OK)
-  async refresh(@GetJwtPayload() user: JwtPayload): Promise<GetRefreshDto> {
-    const token = await this.authService.generateToken(user);
-    return {
-      token,
-    };
+  async refresh(@GetJwtPayload() user: JwtPayload, @Res() res: Response) {
+    const response = await this.authService.refresh(user);
+    res.setHeader('Set-Cookie', [response.refreshTokenCookie.cookie]);
+    delete response.refreshTokenCookie;
+    res.json(response).end();
   }
 
   @RegisterApiDocs()
@@ -90,6 +87,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async logOut(@GetJwtPayload() user: JwtPayload, @Res() res: Response) {
     await this.userService.removeRefreshToken(user.id);
-    res.setHeader('Set-Cookie', this.authService.getCookiesForLogOut());
+    res.clearCookie('Refresh');
+    res.json().end();
   }
 }
