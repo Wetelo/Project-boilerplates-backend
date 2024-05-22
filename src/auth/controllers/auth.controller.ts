@@ -1,6 +1,7 @@
 import {
   Body,
-  Controller, Get,
+  Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -90,6 +91,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async logOut(@GetJwtPayload() user: JwtPayload, @Res() res: Response) {
     await this.userService.removeRefreshToken(user.id);
-    res.setHeader('Set-Cookie', this.authService.getCookiesForLogOut());
+    res.clearCookie('Refresh');
+    res.json().end();
   }
 }

@@ -208,6 +208,10 @@ export class AuthService {
   }
 
   getCookiesForLogOut() {
-    return ['Refresh=; HttpOnly; Path=/; Max-Age=0'];
+    const cookieExpireTimeSeconds: number = 0;
+    const domain = this.configService.get(CONFIG.COOKIE_DOMAIN);
+    return [
+      `Refresh=; HttpOnly=true; Secure=true; Domain=${domain}; SameSite=Strict; Path=/; Max-Age=${cookieExpireTimeSeconds}`,
+    ];
   }
 }
