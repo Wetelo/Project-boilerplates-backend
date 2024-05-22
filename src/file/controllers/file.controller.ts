@@ -73,14 +73,13 @@ export class FileController {
   }
 
   @GetFileApiDocs()
-  @Get('/:id')
-  @UseGuards(JwtAuthGuard, ActiveUserGuard)
+  @Get('/:uuid')
   async getFile(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('uuid') uuid: string,
     @Res() res: Response,
     @GetJwtPayload() { id: userId }: JwtPayload,
   ) {
-    const filename = await this.fileLocal.getFile(id, userId);
+    const filename = await this.fileLocal.getFile(uuid, userId);
     return filename
       ? res.sendFile(filename, { root: UPLOAD_FILE_PATH })
       : res.end();
@@ -89,12 +88,12 @@ export class FileController {
   }
 
   @DeleteFileApiDocs()
-  @Delete('/:id')
+  @Delete('/:uuid')
   @UseGuards(JwtAuthGuard, ActiveUserGuard)
   async deleteFile(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('uuid') uuid: string,
     @GetJwtPayload() { id: userId }: JwtPayload,
   ) {
-    return await this.fileLocal.deleteFile(id, userId);
+    return await this.fileLocal.deleteFile(uuid, userId);
   }
 }

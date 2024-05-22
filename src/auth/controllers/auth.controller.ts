@@ -1,11 +1,8 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
-  Param,
-  ParseIntPipe,
   Post,
   Res,
   UseGuards,
@@ -27,7 +24,6 @@ import { GetJwtPayload } from '../../utils/decorators/jwt-payload.decorator';
 import { JwtPayload } from '../../common/types/jwt-payload.type';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { GetRefreshApiDocs } from '../../user/docs/get-refresh.decorator';
-import { GetRefreshDto } from '../../user/dto/responses/get-refresh.dto';
 import { GetLogoutApiDocs } from '../../user/docs/logout.decorator';
 
 @ApiTags('auth')

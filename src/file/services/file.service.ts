@@ -36,14 +36,14 @@ export class FileService {
     //   UPLOAD_FILE_PATH + file.filename,
     // );
     return {
-      id: newFile.id,
+      uuid: newFile.uuid,
     };
   }
 
-  async getFile(id: number, userId: number) {
+  async getFile(uuid: string, userId: number) {
     const file = await this.fileRepository.findOne({
       where: {
-        id,
+        uuid,
         user: {
           id: userId,
         },
@@ -60,10 +60,13 @@ export class FileService {
     // return await this.fileS3.downloadFile(file.fileName);
   }
 
-  async deleteFile(id: number, userId: number): Promise<RemoveFileResponseDto> {
+  async deleteFile(
+    uuid: string,
+    userId: number,
+  ): Promise<RemoveFileResponseDto> {
     const file = await this.fileRepository.findOne({
       where: {
-        id,
+        uuid,
         user: {
           id: userId,
         },
@@ -81,7 +84,7 @@ export class FileService {
     }
     //delete from S3
     //await this.fileS3.removeFile(file.fileName);
-    await this.fileRepository.delete({ id });
+    await this.fileRepository.delete({ uuid });
     return {
       message: 'File was successfully deleted',
     };
