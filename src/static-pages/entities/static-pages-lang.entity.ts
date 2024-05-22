@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
@@ -7,14 +6,15 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { StaticPage } from './static-pages.entity';
+import { LangEnum } from '../../common/enums/lang.enum';
 
 @Entity()
 export class StaticPageLang {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column({ name: 'lang_id' })
-  langId: string;
+  @Column({ name: 'lang_id', enum: LangEnum })
+  langId: LangEnum;
 
   @JoinColumn({ name: 'page_id', referencedColumnName: 'id' })
   @ManyToOne(() => StaticPage)
@@ -23,7 +23,6 @@ export class StaticPageLang {
   @Column({ nullable: true })
   public content: string;
 
-  @ApiProperty()
   @Column()
   public title: string;
 }

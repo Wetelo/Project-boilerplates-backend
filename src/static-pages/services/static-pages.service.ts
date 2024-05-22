@@ -82,6 +82,8 @@ export class StaticPagesService {
     const existingStaticPage = await this.staticPageRepository.findOne({
       where: [{ slug: staticPageDto.slug }, { title: staticPageDto.title }],
     });
+    //TODO lang
+
     //uncomment if slug should be generated automatically and npm i slugify
     //import slugify from 'slugify';
     //const slug = await this.getSlug(title);

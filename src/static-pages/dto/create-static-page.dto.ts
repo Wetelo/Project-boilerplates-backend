@@ -1,5 +1,22 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { LangEnum } from '../../common/enums/lang.enum';
+export class StaticPageLangDto {
+  @ApiProperty()
+  @IsEnum(LangEnum)
+  @IsNotEmpty()
+  langId: LangEnum;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  title: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  content: string;
+}
 
 export class CreateStaticPageDto {
   @ApiProperty()
@@ -20,4 +37,8 @@ export class CreateStaticPageDto {
   @ApiPropertyOptional()
   @IsOptional()
   noIndex: boolean;
+
+  @ApiPropertyOptional({ isArray: true, type: StaticPageLangDto })
+  @IsOptional()
+  langs: StaticPageLangDto[];
 }
