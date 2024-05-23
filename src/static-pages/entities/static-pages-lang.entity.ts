@@ -17,7 +17,10 @@ export class StaticPageLang {
   langId: LangEnum;
 
   @JoinColumn({ name: 'page_id', referencedColumnName: 'id' })
-  @ManyToOne(() => StaticPage)
+  @ManyToOne(() => StaticPage, {
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
   public page: StaticPage;
 
   @Column({ nullable: true })

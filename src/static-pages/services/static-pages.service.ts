@@ -16,6 +16,8 @@ import { StaticPageType } from '../types/static-page.type';
 import { PAGINATION_DEFAULT_SETTINGS } from '../../common/constants/pagination';
 import { SortOrderEnum } from 'src/common/enums/sort-order.enum';
 import { ENTITIES } from '../../common/enums/entities';
+import { StaticPageLang } from '../entities/static-pages-lang.entity';
+import { StaticPageLangType } from '../types/static-page-lang.type';
 
 @Injectable()
 export class StaticPagesService {
@@ -24,10 +26,15 @@ export class StaticPagesService {
     private readonly staticPageRepository: Repository<StaticPage>,
     @Inject(ENTITIES.STATIC_PAGES)
     private readonly staticPage: StaticPageType,
+    @Inject(ENTITIES.STATIC_PAGE_LANG)
+    private readonly staticPageLang: StaticPageLangType,
   ) {}
   async findOneBySlug(slug: string) {
     const staticPage = await this.staticPageRepository.findOne({
       where: { slug, noIndex: false },
+      relations: {
+        translations: true,
+      },
     });
 
     if (!staticPage) {
@@ -40,6 +47,9 @@ export class StaticPagesService {
   async findOneById(id: number) {
     const staticPage = await this.staticPageRepository.findOne({
       where: { id },
+      relations: {
+        translations: true,
+      },
     });
 
     if (!staticPage) {
@@ -82,8 +92,6 @@ export class StaticPagesService {
     const existingStaticPage = await this.staticPageRepository.findOne({
       where: [{ slug: staticPageDto.slug }, { title: staticPageDto.title }],
     });
-    //TODO lang
-
     //uncomment if slug should be generated automatically and npm i slugify
     //import slugify from 'slugify';
     //const slug = await this.getSlug(title);
@@ -93,8 +101,20 @@ export class StaticPagesService {
       );
     }
     const staticPage = new this.staticPage();
-    Object.assign<StaticPage, Partial<StaticPage>>(staticPage, staticPageDto);
-
+    const translations: StaticPageLang[] = [];
+    for (const item of staticPageDto.translations) {
+      const staticPageLang = new this.staticPageLang();
+      Object.assign<StaticPageLang, Partial<StaticPageLang>>(
+        staticPageLang,
+        item,
+      );
+      translations.push(staticPageLang);
+    }
+    staticPage.slug = staticPageDto.slug;
+    staticPage.title = staticPageDto.title;
+    staticPage.content = staticPageDto.content;
+    staticPage.noIndex = staticPageDto.noIndex;
+    staticPage.translations = translations;
     return this.staticPageRepository.save(staticPage);
   }
 

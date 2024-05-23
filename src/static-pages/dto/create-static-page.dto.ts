@@ -40,5 +40,5 @@ export class CreateStaticPageDto {
 
   @ApiPropertyOptional({ isArray: true, type: StaticPageLangDto })
   @IsOptional()
-  langs: StaticPageLangDto[];
+  translations: StaticPageLangDto[];
 }
