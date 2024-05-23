@@ -14,7 +14,13 @@ import { AddStatusToUser1714661688778 } from './migrations/1714661688778-add_sta
 import { UserVerification } from './src/user/entities/user-verification.entity';
 import { AddUserVerification1714686851253 } from './migrations/1714686851253-add_user_verification';
 import { AddRefreshToken1715180605959 } from './migrations/1715180605959-add_refresh_token';
+import { StaticPage } from './src/static-pages/entities/static-pages.entity';
+import { AddStaticPage1715779621743 } from './migrations/1715779621743-add_static_page';
+import { AddUniqueToTitle1715868471649 } from './migrations/1715868471649-add_unique_to_title';
+import { StaticPageLang } from './src/static-pages/entities/static-pages-lang.entity';
+import { AddStaticPagesLang1715878559815 } from './migrations/1715878559815-add_static_pages_lang';
 import { AddUuidForFile1716389764542 } from './migrations/1716389764542-add_uuid_for_file';
+import { AddDeleteForStaticPageRelations1716395955840 } from './migrations/1716395955840-add_delete_for_static_page_relations';
 import { AddEmailToVerification1716464571439 } from './migrations/1716464571439-add_email_to_verification';
 import { AddNullableToEmail1716471561758 } from './migrations/1716471561758-add_nullable_to_email';
 
@@ -28,7 +34,14 @@ const options: DataSourceOptions & SeederOptions = {
   username: configService.get(CONFIG.POSTGRES_USER),
   password: configService.get(CONFIG.POSTGRES_PASSWORD),
   database: configService.get(CONFIG.POSTGRES_DB),
-  entities: [Log, User, FileEntity, UserVerification],
+  entities: [
+    Log,
+    User,
+    FileEntity,
+    UserVerification,
+    StaticPage,
+    StaticPageLang,
+  ],
   migrations: [
     CreateUser1714493291084,
     CreateLog1714494159359,
@@ -36,7 +49,11 @@ const options: DataSourceOptions & SeederOptions = {
     AddStatusToUser1714661688778,
     AddUserVerification1714686851253,
     AddRefreshToken1715180605959,
+    AddStaticPage1715779621743,
+    AddUniqueToTitle1715868471649,
+    AddStaticPagesLang1715878559815,
     AddUuidForFile1716389764542,
+    AddDeleteForStaticPageRelations1716395955840,
     AddEmailToVerification1716464571439,
     AddNullableToEmail1716471561758,
   ],

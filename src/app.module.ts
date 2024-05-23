@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from './logger/logger.module';
 import { errorFilterProvider } from './utils/filters/error/error.filter.provider';
 import { FileModule } from './file/file.module';
+import { StaticPagesModule } from './static-pages/static-pages.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { FileModule } from './file/file.module';
       isGlobal: true,
     }),
     FileModule,
+    StaticPagesModule,
   ],
   controllers: [AppController],
   providers: [AppService, errorFilterProvider],
