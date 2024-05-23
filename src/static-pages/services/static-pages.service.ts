@@ -137,7 +137,7 @@ export class StaticPagesService {
 
   async update(
     id: number,
-    staticPageDto: UpdateStaticPageDto,
+    updateStaticPageDto: UpdateStaticPageDto,
   ): Promise<UpdateStaticPageDto> {
     const staticPage = await this.staticPageRepository.findOne({
       where: { id },
@@ -150,8 +150,8 @@ export class StaticPagesService {
     }
     const existingStaticPage = await this.staticPageRepository.findOne({
       where: [
-        { slug: staticPageDto.slug, id: Not(id) },
-        { title: staticPageDto.title, id: Not['id'] },
+        { slug: updateStaticPageDto.slug, id: Not(id) },
+        { title: updateStaticPageDto.title, id: Not['id'] },
       ],
     });
     if (existingStaticPage) {
@@ -159,7 +159,21 @@ export class StaticPagesService {
         'Static page with this slug or title already exists',
       );
     }
-    Object.assign<StaticPage, Partial<StaticPage>>(staticPage, staticPageDto);
+
+    const translations: StaticPageLang[] = [];
+    for (const item of updateStaticPageDto.translations) {
+      const staticPageLang = new this.staticPageLang();
+      Object.assign<StaticPageLang, Partial<StaticPageLang>>(
+        staticPageLang,
+        item,
+      );
+      translations.push(staticPageLang);
+    }
+    staticPage.slug = updateStaticPageDto.slug;
+    staticPage.title = updateStaticPageDto.title;
+    staticPage.content = updateStaticPageDto.content;
+    staticPage.noIndex = updateStaticPageDto.noIndex;
+    staticPage.translations = translations;
     return await this.staticPageRepository.save(staticPage);
   }
 

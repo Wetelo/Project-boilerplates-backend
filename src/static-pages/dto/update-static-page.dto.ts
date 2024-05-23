@@ -1,9 +1,3 @@
-import { OmitType } from '@nestjs/swagger';
-import { StaticPage } from '../entities/static-pages.entity';
+import { CreateStaticPageDto } from './create-static-page.dto';
 
-//TODO refactor
-export class UpdateStaticPageDto extends OmitType(StaticPage, [
-  'id',
-  'createdAt',
-  'updatedAt',
-]) {}
+export class UpdateStaticPageDto extends CreateStaticPageDto {}
