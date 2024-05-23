@@ -78,9 +78,9 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    if (updateDto.avatarFileId) {
+    if (updateDto.avatarFileUUID) {
       const file = await this.fileRepository.findOne({
-        where: { id: updateDto.avatarFileId },
+        where: { uuid: updateDto.avatarFileUUID },
       });
       if (!file) {
         throw new NotFoundException('File not found');
@@ -112,7 +112,7 @@ export class UserService {
     await this.setNewUserPassword(newPassword, user.id);
   }
 
-  async getProfile(id): Promise<GetUserResponseDto> {
+  async getProfile(id: number): Promise<GetUserResponseDto> {
     const user = await this.userRepository.findOne({
       where: { id },
       relations: { avatar: true },
@@ -126,7 +126,7 @@ export class UserService {
       lastName: user.lastName,
       email: user.email,
       phone: user.phone,
-      avatarFileId: user.avatar?.id,
+      avatarFileUUID: user.avatar?.uuid,
     };
   }
 

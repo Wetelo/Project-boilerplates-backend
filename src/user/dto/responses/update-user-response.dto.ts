@@ -17,5 +17,5 @@ export class UpdateUserResponseDto {
   phone: string;
 
   @ApiProperty()
-  avatarFileId: number;
+  avatarFileUUID: string;
 }

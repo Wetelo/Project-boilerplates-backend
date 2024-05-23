@@ -73,7 +73,9 @@ export class FileService {
       },
     });
     if (!file) {
-      throw new NotFoundException('File not found');
+      return {
+        message: 'File was not exist',
+      };
     }
     const filePath = UPLOAD_FILE_PATH + '/' + file.fileName;
     if (fs.existsSync(filePath)) {

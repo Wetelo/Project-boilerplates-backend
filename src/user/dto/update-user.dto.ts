@@ -14,5 +14,5 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  avatarFileId: number;
+  avatarFileUUID: string;
 }
