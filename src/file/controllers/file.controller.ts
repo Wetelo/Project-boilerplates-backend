@@ -1,11 +1,11 @@
 import {
+  BadRequestException,
   Controller,
   Delete,
   Get,
   HttpStatus,
   Param,
   ParseFilePipeBuilder,
-  ParseIntPipe,
   Post,
   Res,
   UploadedFile,
@@ -42,31 +42,23 @@ export class FileController {
           cb(null, `${randomUUID()}-${file.originalname.replace(/\s/g, '-')}`);
         },
       }),
+      fileFilter: (request, file, callback) => {
+        if (!file.mimetype.includes('image') && !file.mimetype.includes('pdf')) {
+          return callback(
+            new BadRequestException('Provide a valid image or pdf document'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+      limits: {
+        fileSize: MAX_FILE_SIZE,
+      },
     }),
   )
   @UseGuards(JwtAuthGuard, ActiveUserGuard)
   async uploadFile(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'jpeg',
-        })
-        .addFileTypeValidator({
-          fileType: 'png',
-        })
-        .addFileTypeValidator({
-          fileType: 'jpg',
-        })
-        .addFileTypeValidator({
-          fileType: 'pdf',
-        })
-        .addMaxSizeValidator({
-          maxSize: MAX_FILE_SIZE,
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    ) // FOR ARRAY of files: Array<Express.Multer.File>)
+    @UploadedFile() // FOR ARRAY of files: Array<Express.Multer.File>)
     file: Express.Multer.File,
   ) {
     return await this.fileLocal.saveFile(file);
@@ -77,9 +69,8 @@ export class FileController {
   async getFile(
     @Param('uuid') uuid: string,
     @Res() res: Response,
-    @GetJwtPayload() { id: userId }: JwtPayload,
   ) {
-    const filename = await this.fileLocal.getFile(uuid, userId);
+    const filename = await this.fileLocal.getFile(uuid);
     return filename
       ? res.sendFile(filename, { root: UPLOAD_FILE_PATH })
       : res.end();

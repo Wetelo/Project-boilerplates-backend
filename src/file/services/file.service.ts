@@ -40,13 +40,10 @@ export class FileService {
     };
   }
 
-  async getFile(uuid: string, userId: number) {
+  async getFile(uuid: string) {
     const file = await this.fileRepository.findOne({
       where: {
         uuid,
-        user: {
-          id: userId,
-        },
       },
       relations: {
         user: true,
