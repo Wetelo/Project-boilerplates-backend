@@ -160,8 +160,10 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const { code } =
-      await this.userVerificationService.getVerificationCode(user);
+    const { code } = await this.userVerificationService.getVerificationCode(
+      user,
+      { email },
+    );
     await this.mailService.sendVerifyCode({
       email: email ?? user.email,
       name: user.firstName + user.lastName,
@@ -189,11 +191,14 @@ export class UserService {
     if (existUser) {
       throw new BadRequestException('User with such email already exist');
     }
-    await this.userVerificationService.validateVerificationCode({
-      email,
-      code,
-    });
+    const verifyCode =
+      await this.userVerificationService.validateVerificationCode({
+        email: user.email,
+        code,
+        newEmail: email,
+      });
     await this.userRepository.update({ id }, { email });
+    await this.userVerificationService.deleteCode(verifyCode);
     return {
       email,
     };
@@ -217,11 +222,13 @@ export class UserService {
     // if (phone) {
     //   throw new BadRequestException('User with such phone already exist');
     // }
-    await this.userVerificationService.validateVerificationCode({
-      email: user.email,
-      code,
-    });
+    const verifyCode =
+      await this.userVerificationService.validateVerificationCode({
+        email: user.email,
+        code,
+      });
     await this.userRepository.update({ id }, { phone });
+    await this.userVerificationService.deleteCode(verifyCode);
     return {
       phone,
     };

@@ -15,6 +15,8 @@ import { UserVerification } from './src/user/entities/user-verification.entity';
 import { AddUserVerification1714686851253 } from './migrations/1714686851253-add_user_verification';
 import { AddRefreshToken1715180605959 } from './migrations/1715180605959-add_refresh_token';
 import { AddUuidForFile1716389764542 } from './migrations/1716389764542-add_uuid_for_file';
+import { AddEmailToVerification1716464571439 } from './migrations/1716464571439-add_email_to_verification';
+import { AddNullableToEmail1716471561758 } from './migrations/1716471561758-add_nullable_to_email';
 
 config();
 const configService = new ConfigService();
@@ -35,6 +37,8 @@ const options: DataSourceOptions & SeederOptions = {
     AddUserVerification1714686851253,
     AddRefreshToken1715180605959,
     AddUuidForFile1716389764542,
+    AddEmailToVerification1716464571439,
+    AddNullableToEmail1716471561758,
   ],
   seeds: [MainSeeder],
 };

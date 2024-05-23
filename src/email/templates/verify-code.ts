@@ -5,10 +5,11 @@ export const verifyCodeHtml = ({
   username: string;
   code: string;
 }) => {
+  username = username ?? 'user';
   return `
         <div>
         <h1>Hello, ${username}</h1>
-        <p>Here your verification code ${code}></p>
+        <p>Here your verification code: ${code}</p>
         </div>
     `;
 };

@@ -3,9 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
-  ParseFilePipeBuilder,
   Post,
   Res,
   UploadedFile,
@@ -43,7 +41,10 @@ export class FileController {
         },
       }),
       fileFilter: (request, file, callback) => {
-        if (!file.mimetype.includes('image') && !file.mimetype.includes('pdf')) {
+        if (
+          !file.mimetype.includes('image') &&
+          !file.mimetype.includes('pdf')
+        ) {
           return callback(
             new BadRequestException('Provide a valid image or pdf document'),
             false,
@@ -66,10 +67,7 @@ export class FileController {
 
   @GetFileApiDocs()
   @Get('/:uuid')
-  async getFile(
-    @Param('uuid') uuid: string,
-    @Res() res: Response,
-  ) {
+  async getFile(@Param('uuid') uuid: string, @Res() res: Response) {
     const filename = await this.fileLocal.getFile(uuid);
     return filename
       ? res.sendFile(filename, { root: UPLOAD_FILE_PATH })

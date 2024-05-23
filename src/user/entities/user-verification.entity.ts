@@ -22,6 +22,9 @@ export class UserVerification {
   })
   public expiredAt: Date;
 
+  @Column({ nullable: true })
+  email: string;
+
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   @ManyToOne(() => User, {
     orphanedRowAction: 'delete',

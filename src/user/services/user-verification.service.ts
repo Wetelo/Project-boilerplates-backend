@@ -33,7 +33,7 @@ export class UserVerificationService {
 
   async getVerificationCode(
     user: User,
-    options?: { isResetCode?: boolean; expiredAfter?: number },
+    options?: { isResetCode?: boolean; expiredAfter?: number; email?: string },
   ) {
     const expiredAt = new Date(
       Date.now() + (options?.expiredAfter ?? this.EXPIRED_AFTER),
@@ -45,11 +45,16 @@ export class UserVerificationService {
       expiredAt,
       code,
       user,
+      email: options.email,
     };
     return this.createVerificationCode(verificationData);
   }
 
-  async validateVerificationCode({ code, email }: UserVerifyCodeType) {
+  async validateVerificationCode({
+    code,
+    email,
+    newEmail,
+  }: UserVerifyCodeType) {
     const verificationCode = await this.userVerificationRepository.findOne({
       where: {
         code,
@@ -62,6 +67,8 @@ export class UserVerificationService {
       },
     });
     if (!verificationCode?.code) throw new BadRequestException('Invalid code');
+    if (newEmail && verificationCode.email !== newEmail)
+      throw new BadRequestException('Invalid email');
     await this.checkExpiration(verificationCode);
     return verificationCode;
   }
