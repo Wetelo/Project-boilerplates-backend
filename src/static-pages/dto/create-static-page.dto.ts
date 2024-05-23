@@ -3,6 +3,10 @@ import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { LangEnum } from '../../common/enums/lang.enum';
 export class StaticPageLangDto {
   @ApiProperty()
+  @IsOptional()
+  id: number;
+
+  @ApiProperty()
   @IsEnum(LangEnum)
   @IsNotEmpty()
   langId: LangEnum;

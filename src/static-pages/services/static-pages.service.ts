@@ -141,6 +141,9 @@ export class StaticPagesService {
   ): Promise<UpdateStaticPageDto> {
     const staticPage = await this.staticPageRepository.findOne({
       where: { id },
+      relations: {
+        translations: true,
+      },
     });
     // uncomment if slug should be generated automatically and npm i slugify
     // import slugify from 'slugify';
@@ -162,7 +165,10 @@ export class StaticPagesService {
 
     const translations: StaticPageLang[] = [];
     for (const item of updateStaticPageDto.translations) {
-      const staticPageLang = new this.staticPageLang();
+      const existStaticPageLang = staticPage.translations.find((subItem) => {
+        return subItem.id === item.id;
+      });
+      const staticPageLang = existStaticPageLang ?? new this.staticPageLang();
       Object.assign<StaticPageLang, Partial<StaticPageLang>>(
         staticPageLang,
         item,
