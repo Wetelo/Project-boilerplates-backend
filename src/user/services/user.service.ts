@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
   NotFoundException,
@@ -35,6 +36,17 @@ export class UserService {
     private readonly fileRepository: Repository<FileEntity>,
     private readonly fileService: FileService,
   ) {}
+
+  async checkEmailAvailability({ email }: { email: string }) {
+    const existedEmail = await this.userRepository.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (existedEmail) {
+      throw new ConflictException('Email has been already taken');
+    }
+  }
 
   async setNewUserPassword(newPassword: string, userId: number) {
     const password = await this.bcryptLib.hash(newPassword, HASH_ROUNDS);

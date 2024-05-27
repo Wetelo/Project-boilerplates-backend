@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Put,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -26,11 +27,22 @@ import { ChangeEmailApiDocs } from '../docs/change-email.decorator';
 import { ChangePhoneApiDocs } from '../docs/change-phone.decorator';
 import { ChangeDataVerifyCodeApiDocs } from '../docs/change-data-verify-code.decorator';
 import { ChangeEmailDto } from '../dto/change-email.dto';
+import { CheckEmailDto } from '../dto/check-email.dto';
+import { CheckEmailApiDocs } from '../docs/check-email.api.docs';
 
 @ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @CheckEmailApiDocs()
+  @Post('check-email')
+  async checkUserEmailAvailability(@Body() body: CheckEmailDto) {
+    await this.userService.checkEmailAvailability({
+      email: body.email,
+    });
+    return { message: 'Email is available' };
+  }
 
   @UpdateProfileApiDocs()
   @Put('/profile')
