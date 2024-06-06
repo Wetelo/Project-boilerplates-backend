@@ -1,3 +1,10 @@
+## About
+NestJS REST API boilerplate for a typical project
+
+A fully compatible frontend boilerplate: 
+
+A fully compatible admin panel boilerplate: https://github.com/Wetelo/Project-boilerplates-admin
+
 ## Technologies
 
 Nest framework, TypeORM, PostgreSQL, PgAdmin, Docker
