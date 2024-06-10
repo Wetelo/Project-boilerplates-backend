@@ -1,7 +1,8 @@
 ## About
+
 NestJS REST API boilerplate for a typical project
 
-A fully compatible frontend boilerplate: 
+A fully compatible frontend boilerplate: https://github.com/Wetelo/Project-boilerplates-frontend-web-2
 
 A fully compatible admin panel boilerplate: https://github.com/Wetelo/Project-boilerplates-admin
 
