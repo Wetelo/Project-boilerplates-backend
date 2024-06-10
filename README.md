@@ -1,3 +1,5 @@
+![image](https://github.com/Wetelo/Project-boilerplates-backend/blob/develop/logo.jpg?raw=true)
+
 ## About
 
 NestJS REST API boilerplate for a typical project
