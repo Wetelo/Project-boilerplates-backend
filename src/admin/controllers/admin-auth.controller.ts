@@ -11,7 +11,6 @@ import { LoginDto } from '../../common/dto/login.dto';
 import { AdminAuthService } from '../services/admin-auth.service';
 import { Response } from 'express';
 import { AdminAuthLoginApiDocs } from '../docs/admin-auth-login-api-docs.decorator';
-import { AdminAuthResponseDto } from '../dto/responses/admin-auth-response.dto';
 
 @ApiTags('admin/auth')
 @Controller('admin/auth')
