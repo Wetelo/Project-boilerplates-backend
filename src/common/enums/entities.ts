@@ -5,4 +5,5 @@ export enum ENTITIES {
   USER_VERIFICATION = 'UserVerification',
   STATIC_PAGES = 'StaticPage',
   STATIC_PAGE_LANG = 'StaticPageLang',
+  META_TAG = 'MetaTag',
 }

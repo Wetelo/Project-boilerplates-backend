@@ -12,6 +12,7 @@ import { LoggerModule } from './logger/logger.module';
 import { errorFilterProvider } from './utils/filters/error/error.filter.provider';
 import { FileModule } from './file/file.module';
 import { StaticPagesModule } from './static-pages/static-pages.module';
+import { MetaTagsModule } from './meta-tags/meta-tags.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { StaticPagesModule } from './static-pages/static-pages.module';
     }),
     FileModule,
     StaticPagesModule,
+    MetaTagsModule,
   ],
   controllers: [AppController],
   providers: [AppService, errorFilterProvider],

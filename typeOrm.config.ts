@@ -23,6 +23,8 @@ import { AddUuidForFile1716389764542 } from './migrations/1716389764542-add_uuid
 import { AddDeleteForStaticPageRelations1716395955840 } from './migrations/1716395955840-add_delete_for_static_page_relations';
 import { AddEmailToVerification1716464571439 } from './migrations/1716464571439-add_email_to_verification';
 import { AddNullableToEmail1716471561758 } from './migrations/1716471561758-add_nullable_to_email';
+import { MetaTag } from './src/meta-tags/entities/meta-tag.entity';
+import { AddMetaTags1719237213437 } from './migrations/1719237213437-add_meta_tags';
 
 config();
 const configService = new ConfigService();
@@ -41,6 +43,7 @@ const options: DataSourceOptions & SeederOptions = {
     UserVerification,
     StaticPage,
     StaticPageLang,
+    MetaTag,
   ],
   migrations: [
     CreateUser1714493291084,
@@ -56,6 +59,7 @@ const options: DataSourceOptions & SeederOptions = {
     AddDeleteForStaticPageRelations1716395955840,
     AddEmailToVerification1716464571439,
     AddNullableToEmail1716471561758,
+    AddMetaTags1719237213437,
   ],
   seeds: [MainSeeder],
 };
