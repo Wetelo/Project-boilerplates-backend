@@ -25,6 +25,7 @@ import { AddEmailToVerification1716464571439 } from './migrations/1716464571439-
 import { AddNullableToEmail1716471561758 } from './migrations/1716471561758-add_nullable_to_email';
 import { MetaTag } from './src/meta-tags/entities/meta-tag.entity';
 import { AddMetaTags1719237213437 } from './migrations/1719237213437-add_meta_tags';
+import { FixImageFkForMetaTags1719324165997 } from './migrations/1719324165997-fix_image_fk_for_meta_tags';
 
 config();
 const configService = new ConfigService();
@@ -60,6 +61,7 @@ const options: DataSourceOptions & SeederOptions = {
     AddEmailToVerification1716464571439,
     AddNullableToEmail1716471561758,
     AddMetaTags1719237213437,
+    FixImageFkForMetaTags1719324165997,
   ],
   seeds: [MainSeeder],
 };

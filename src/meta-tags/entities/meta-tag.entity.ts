@@ -51,7 +51,12 @@ export class MetaTag {
   })
   public updatedAt: Date;
 
-  @OneToOne(() => FileEntity, { cascade: ['remove'] })
+  @OneToOne(() => FileEntity, {
+    orphanedRowAction: 'delete',
+    onDelete: 'CASCADE',
+    cascade: true,
+    nullable: true,
+  })
   @JoinColumn({ name: 'image_id' })
   image: FileEntity;
 }
