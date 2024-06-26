@@ -52,6 +52,7 @@ export class User {
 
   @Column({
     nullable: true,
+    name: 'current_hashed_refresh_token',
   })
   @Exclude()
   public currentHashedRefreshToken?: string;

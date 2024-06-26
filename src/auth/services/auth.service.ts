@@ -135,14 +135,17 @@ export class AuthService {
       registerDto.password,
       HASH_ROUNDS,
     );
-    const token: string = await this.generateToken(user);
-    const refreshTokenCookie = await this.getCookieWithJwtRefreshToken({
-      id: user.id,
-      role: user.role,
-    });
-    user.currentHashedRefreshToken = refreshTokenCookie.token;
-    await this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
 
+    const token: string = await this.generateToken(savedUser);
+    const refreshTokenCookie = await this.getCookieWithJwtRefreshToken({
+      id: savedUser.id,
+      role: savedUser.role,
+    });
+    await this.userService.setCurrentRefreshToken(
+      refreshTokenCookie.token,
+      savedUser.id,
+    );
     return {
       firstName: user.firstName,
       lastName: user.lastName,

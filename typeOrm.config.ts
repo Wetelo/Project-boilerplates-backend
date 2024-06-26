@@ -26,6 +26,7 @@ import { AddNullableToEmail1716471561758 } from './migrations/1716471561758-add_
 import { MetaTag } from './src/meta-tags/entities/meta-tag.entity';
 import { AddMetaTags1719237213437 } from './migrations/1719237213437-add_meta_tags';
 import { FixImageFkForMetaTags1719324165997 } from './migrations/1719324165997-fix_image_fk_for_meta_tags';
+import { FixFieldNameRefreshToken1719400588020 } from './migrations/1719400588020-fix_field_name_refresh_token';
 
 config();
 const configService = new ConfigService();
@@ -62,6 +63,7 @@ const options: DataSourceOptions & SeederOptions = {
     AddNullableToEmail1716471561758,
     AddMetaTags1719237213437,
     FixImageFkForMetaTags1719324165997,
+    FixFieldNameRefreshToken1719400588020,
   ],
   seeds: [MainSeeder],
 };
