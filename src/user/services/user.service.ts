@@ -23,15 +23,22 @@ import { UpdatePhoneDto } from '../dto/update-phone.dto';
 import { UpdateEmailDto } from '../dto/update-email.dto';
 import { ChangePhoneResponseDto } from '../dto/responses/change-phone-response.dto';
 import { ChangeEmailResponseDto } from '../dto/responses/change-email-response.dto';
+import { ENTITIES } from '../../common/enums/entities';
+import { UserRefreshTokenType } from '../types/user-refresh-token.type';
+import { UserRefreshToken } from '../entities/user-refresh-token.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject(LIBS.BCRYPT) private readonly bcryptLib: bcrypt,
+    @Inject(ENTITIES.USER_REFRESH_TOKEN)
+    private readonly userRefreshToken: UserRefreshTokenType,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly userVerificationService: UserVerificationService,
     private readonly mailService: MailService,
+    @InjectRepository(UserRefreshToken)
+    private readonly userRefreshTokenRepository: Repository<UserRefreshToken>,
     @InjectRepository(FileEntity)
     private readonly fileRepository: Repository<FileEntity>,
     private readonly fileService: FileService,
@@ -58,9 +65,16 @@ export class UserService {
       refreshToken,
       HASH_ROUNDS,
     );
-    await this.userRepository.update(userId, {
-      currentHashedRefreshToken,
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: {
+        refreshTokens: true,
+      },
     });
+    const newRefreshToken = new this.userRefreshToken();
+    newRefreshToken.hashedRefreshToken = currentHashedRefreshToken;
+    user.refreshTokens.push(newRefreshToken);
+    await this.userRepository.save(user);
   }
 
   async sendForgotPasswordCode(email: string) {
@@ -142,29 +156,51 @@ export class UserService {
     };
   }
 
-  async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
+  async getUserIfRefreshTokenMatches(userRefreshToken: string, id: number) {
     const user = await this.userRepository.findOne({
       where: { id, deletedAt: null, status: true },
+      relations: {
+        refreshTokens: true,
+      },
     });
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const isRefreshTokenMatching = await this.bcryptLib.compare(
-      refreshToken,
-      user.currentHashedRefreshToken,
-    );
-    if (isRefreshTokenMatching) {
-      return {
-        id: user.id,
-      };
+    let isRefreshTokenMatching = false;
+    for (const refreshToken of user.refreshTokens) {
+      isRefreshTokenMatching = await this.bcryptLib.compare(
+        userRefreshToken,
+        refreshToken.hashedRefreshToken,
+      );
+      if (isRefreshTokenMatching) {
+        return {
+          id: user.id,
+        };
+      }
     }
   }
 
-  async removeRefreshToken(userId: number) {
-    return this.userRepository.update(userId, {
-      currentHashedRefreshToken: null,
+  async removeRefreshToken(id: number, userRefreshToken: string) {
+    if (!userRefreshToken) {
+      return false;
+    }
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: {
+        refreshTokens: true,
+      },
     });
+    let isRefreshTokenMatching = false;
+    for (const refreshToken of user.refreshTokens) {
+      isRefreshTokenMatching = await this.bcryptLib.compare(
+        userRefreshToken,
+        refreshToken.hashedRefreshToken,
+      );
+      if (isRefreshTokenMatching) {
+        return await this.userRefreshTokenRepository.delete(refreshToken.id);
+      }
+    }
   }
 
   async sendVerifyCode(id: number, email = null) {

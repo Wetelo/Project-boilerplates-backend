@@ -4,6 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -11,6 +12,7 @@ import {
 import { UserRoleEnum } from '../../common/enums/user-role.enum';
 import { FileEntity } from '../../file/entities/file.entity';
 import { Exclude } from 'class-transformer';
+import { UserRefreshToken } from './user-refresh-token.entity';
 
 @Entity()
 export class User {
@@ -76,4 +78,15 @@ export class User {
     name: 'deleted_at',
   })
   public deletedAt: Date;
+
+  @OneToMany(
+    () => UserRefreshToken,
+    (refreshToken: UserRefreshToken) => refreshToken.user,
+    {
+      orphanedRowAction: 'delete',
+      onDelete: 'CASCADE',
+      cascade: ['insert', 'update'],
+    },
+  )
+  public refreshTokens: UserRefreshToken[];
 }

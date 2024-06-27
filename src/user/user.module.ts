@@ -9,10 +9,17 @@ import { UserVerification } from './entities/user-verification.entity';
 import { userVerificationEntityProvider } from './providers/user-verification-entity.provider';
 import { FileEntity } from '../file/entities/file.entity';
 import { FileModule } from '../file/file.module';
+import { UserRefreshToken } from './entities/user-refresh-token.entity';
+import { userRefreshTokenProvider } from './providers/user-refresh-token.provider';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, UserVerification, FileEntity]),
+    TypeOrmModule.forFeature([
+      User,
+      UserVerification,
+      FileEntity,
+      UserRefreshToken,
+    ]),
     EmailModule,
     FileModule,
   ],
@@ -20,6 +27,7 @@ import { FileModule } from '../file/file.module';
     UserService,
     UserVerificationService,
     userVerificationEntityProvider,
+    userRefreshTokenProvider,
   ],
   exports: [
     UserService,

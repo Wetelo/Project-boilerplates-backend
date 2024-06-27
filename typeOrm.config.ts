@@ -27,6 +27,8 @@ import { MetaTag } from './src/meta-tags/entities/meta-tag.entity';
 import { AddMetaTags1719237213437 } from './migrations/1719237213437-add_meta_tags';
 import { FixImageFkForMetaTags1719324165997 } from './migrations/1719324165997-fix_image_fk_for_meta_tags';
 import { FixFieldNameRefreshToken1719400588020 } from './migrations/1719400588020-fix_field_name_refresh_token';
+import { UserRefreshToken } from './src/user/entities/user-refresh-token.entity';
+import { MoveRefreshTokenToSepTable1719409480238 } from './migrations/1719409480238-move_refresh_token_to_sep_table';
 
 config();
 const configService = new ConfigService();
@@ -46,6 +48,7 @@ const options: DataSourceOptions & SeederOptions = {
     StaticPage,
     StaticPageLang,
     MetaTag,
+    UserRefreshToken,
   ],
   migrations: [
     CreateUser1714493291084,
@@ -64,6 +67,7 @@ const options: DataSourceOptions & SeederOptions = {
     AddMetaTags1719237213437,
     FixImageFkForMetaTags1719324165997,
     FixFieldNameRefreshToken1719400588020,
+    MoveRefreshTokenToSepTable1719409480238,
   ],
   seeds: [MainSeeder],
 };

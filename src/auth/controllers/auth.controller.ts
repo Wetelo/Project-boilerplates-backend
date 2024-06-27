@@ -4,6 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -11,7 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service';
 import { LoginDto } from '../../common/dto/login.dto';
 import { RegisterDto } from '../dto/register.dto';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { ForgotPasswordEmailDto } from '../dto/forgot-password-email.dto';
 import { UserService } from '../../user/services/user.service';
@@ -48,8 +49,12 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Post('/refresh')
   @HttpCode(HttpStatus.OK)
-  async refresh(@GetJwtPayload() user: JwtPayload, @Res() res: Response) {
-    const response = await this.authService.refresh(user);
+  async refresh(
+    @GetJwtPayload() user: JwtPayload,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const response = await this.authService.refresh(user, req.cookies?.Refresh);
     res.setHeader('Set-Cookie', [response.refreshTokenCookie.cookie]);
     delete response.refreshTokenCookie;
     res.json(response).end();
@@ -85,8 +90,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('log-out')
   @UseGuards(JwtAuthGuard)
-  async logOut(@GetJwtPayload() user: JwtPayload, @Res() res: Response) {
-    await this.userService.removeRefreshToken(user.id);
+  async logOut(
+    @GetJwtPayload() user: JwtPayload,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    await this.userService.removeRefreshToken(user.id, req.cookies?.Refresh);
     res.clearCookie('Refresh');
     res.json().end();
   }

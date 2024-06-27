@@ -63,7 +63,7 @@ export class AuthService {
     };
   }
 
-  async refresh({ id }: JwtPayload) {
+  async refresh({ id }: JwtPayload, oldRefreshToken: string) {
     const user = await this.userRepository.findOne({
       where: { id },
     });
@@ -79,6 +79,8 @@ export class AuthService {
       refreshTokenCookie.token,
       user.id,
     );
+    // remove old token
+    await this.userService.removeRefreshToken(user.id, oldRefreshToken);
     return {
       token,
       refreshTokenCookie,
