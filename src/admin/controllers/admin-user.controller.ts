@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -17,6 +18,8 @@ import { AdminUpdateUserDto } from '../dto/admin-update-user.dto';
 import { AdminGetAllUsersApiDocs } from '../docs/admin-get-all-users-api-docs.decorator';
 import { AdminGetUserApiDocs } from '../docs/admin-get-user-api-docs.decorator';
 import { AdminUpdateUserApiDocs } from '../docs/admin-update-user-api-docs.decorator';
+import { InviteUserDto } from '../dto/invite-user.dto';
+import { InviteUserApiDocs } from '../docs/invite-user.decorator';
 
 @ApiTags('admin/user')
 @Controller('admin/user')
@@ -45,5 +48,12 @@ export class AdminUserController {
     @Body() adminUpdateUserDto: AdminUpdateUserDto,
   ) {
     return await this.adminUserService.updateUser(id, adminUpdateUserDto);
+  }
+
+  @InviteUserApiDocs()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('/invite')
+  async inviteUser(@Body() inviteDto: InviteUserDto) {
+    return await this.adminUserService.inviteUser(inviteDto);
   }
 }
