@@ -26,6 +26,8 @@ import { HASH_ROUNDS } from '../../common/constants/auth';
 import { ConfigService } from '@nestjs/config';
 import { CONFIG } from '../../common/enums/config';
 import { RefreshTokenCookieDto } from '../dto/refresh-token-cookie.dto';
+import { CreateInvitedUserDto } from '../dto/create-invite-user.dto';
+import { UserInvitation } from '../../user/entities/user-invitation.entity';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +36,8 @@ export class AuthService {
     private readonly user: UserType,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserInvitation)
+    private readonly userInvite: Repository<UserInvitation>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @Inject(LIBS.BCRYPT) private readonly bcryptLib: bcrypt,
@@ -216,5 +220,72 @@ export class AuthService {
     return [
       `Refresh=; HttpOnly=true; Secure=true; Domain=${domain}; SameSite=Strict; Path=/; Max-Age=${cookieExpireTimeSeconds}`,
     ];
+  }
+
+  async createUserByInvite(
+    createUserDto: CreateInvitedUserDto,
+  ): Promise<RegisterResponseDto & { refreshTokenCookie: string }> {
+    const existedUser = await this.userRepository.findOne({
+      where: {
+        email: createUserDto.email,
+      },
+    });
+    if (existedUser) {
+      throw new ConflictException('This email is already taken');
+    }
+
+    const invitedUser = await this.userInvite.findOne({
+      where: {
+        email: createUserDto.email,
+      },
+    });
+    if (!invitedUser) {
+      throw new NotFoundException('Invitation not found');
+    }
+    await this.checkInviteExpiration(invitedUser);
+    const user = new this.user();
+    user.firstName = createUserDto.firstName;
+    user.lastName = createUserDto.lastName;
+    user.email = createUserDto.email;
+    user.phone = createUserDto.phone;
+    user.role = UserRoleEnum.USER;
+    user.password = await this.bcryptLib.hash(
+      createUserDto.password,
+      HASH_ROUNDS,
+    );
+    const savedUser = await this.userRepository.save(user);
+
+    const token: string = await this.generateToken(savedUser);
+    const refreshTokenCookie = await this.getCookieWithJwtRefreshToken({
+      id: savedUser.id,
+      role: savedUser.role,
+    });
+    await this.userService.setCurrentRefreshToken(
+      refreshTokenCookie.token,
+      savedUser.id,
+    );
+    await this.deleteInvitedUser(savedUser.id);
+    return {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone,
+      id: user.id,
+      token,
+      refreshTokenCookie: refreshTokenCookie.cookie,
+    };
+  }
+
+  private async checkInviteExpiration(invitationData: UserInvitation) {
+    if (invitationData.expiredAt.getTime() < new Date().getTime()) {
+      await this.deleteInvitedUser(invitationData.id);
+      throw new BadRequestException(
+        'Your invite link was expired. Please try again',
+      );
+    }
+  }
+
+  private async deleteInvitedUser(userId: number) {
+    await this.userInvite.delete({ id: userId });
   }
 }

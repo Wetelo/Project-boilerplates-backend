@@ -25,6 +25,8 @@ import { JwtPayload } from '../../common/types/jwt-payload.type';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { GetRefreshApiDocs } from '../../user/docs/get-refresh.decorator';
 import { GetLogoutApiDocs } from '../../user/docs/logout.decorator';
+import { CreateInvitedUserDto } from '../dto/create-invite-user.dto';
+import { RegisterInvitedUserApiDocs } from '../docs/register-invited-user.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -60,6 +62,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async register(@Body() registerDto: RegisterDto, @Res() res: Response) {
     const response = await this.authService.register(registerDto);
+    res.setHeader('Set-Cookie', [response.refreshTokenCookie]);
+    delete response.refreshTokenCookie;
+    res.json(response).end();
+  }
+
+  @RegisterInvitedUserApiDocs()
+  @HttpCode(HttpStatus.OK)
+  @Post('/register-by-invite')
+  @HttpCode(HttpStatus.OK)
+  async createUser(@Body() body: CreateInvitedUserDto, @Res() res: Response) {
+    const response = await this.authService.createUserByInvite(body);
     res.setHeader('Set-Cookie', [response.refreshTokenCookie]);
     delete response.refreshTokenCookie;
     res.json(response).end();

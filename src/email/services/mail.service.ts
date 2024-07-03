@@ -69,7 +69,7 @@ export class MailService {
     const buildTemplate = this.templatesService.getTemplate('inviteUserHtml');
     //we need it for encoding special symbols such as +
     const encodedEmail = encodeURIComponent(email);
-    const url = `${this.inviteUrl}?&email=${encodedEmail}`;
+    const url = `${this.inviteUrl}?email=${encodedEmail}`;
     const expiredTimeString = `${expirationTime.toLocaleDateString()} ${expirationTime.toLocaleTimeString()}`;
     const html = buildTemplate({
       username,

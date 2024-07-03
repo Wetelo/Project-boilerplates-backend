@@ -11,11 +11,12 @@ import { userEntityProvider } from '../user/providers/user-entity.provider';
 import { BcryptModule } from '../utils/libs/bcrypt/bcrypt.module';
 import { UserModule } from '../user/user.module';
 import { JwtRefreshTokenStrategy } from './passport-strategies/jwt-refresh-token.strategy';
+import { UserInvitation } from '../user/entities/user-invitation.entity';
 
 @Module({
   imports: [
     UserModule,
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, UserInvitation]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
