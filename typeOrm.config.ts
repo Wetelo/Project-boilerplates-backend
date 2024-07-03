@@ -29,6 +29,8 @@ import { FixImageFkForMetaTags1719324165997 } from './migrations/1719324165997-f
 import { FixFieldNameRefreshToken1719400588020 } from './migrations/1719400588020-fix_field_name_refresh_token';
 import { UserRefreshToken } from './src/user/entities/user-refresh-token.entity';
 import { MoveRefreshTokenToSepTable1719409480238 } from './migrations/1719409480238-move_refresh_token_to_sep_table';
+import { UserInvitation } from './src/user/entities/user-invitation.entity';
+import { AddUserInvite1719951795130 } from './migrations/1719951795130-add_user_invite';
 
 config();
 const configService = new ConfigService();
@@ -49,6 +51,7 @@ const options: DataSourceOptions & SeederOptions = {
     StaticPageLang,
     MetaTag,
     UserRefreshToken,
+    UserInvitation,
   ],
   migrations: [
     CreateUser1714493291084,
@@ -68,6 +71,7 @@ const options: DataSourceOptions & SeederOptions = {
     FixImageFkForMetaTags1719324165997,
     FixFieldNameRefreshToken1719400588020,
     MoveRefreshTokenToSepTable1719409480238,
+    AddUserInvite1719951795130,
   ],
   seeds: [MainSeeder],
 };

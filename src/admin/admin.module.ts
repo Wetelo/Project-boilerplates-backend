@@ -15,14 +15,18 @@ import { AdminMetaTagController } from './controllers/admin-meta-tag.controller'
 import { MetaTag } from '../meta-tags/entities/meta-tag.entity';
 import { metaTagEntityProvider } from '../meta-tags/providers/meta-tags-entity.provider';
 import { FileEntity } from '../file/entities/file.entity';
+import { EmailModule } from '../email/email.module';
+import { UserInvitation } from '../user/entities/user-invitation.entity';
+import { userInvitationEntityProvider } from '../user/providers/user-invitation-entity.provider';
 
 @Module({
   imports: [
     AuthModule,
-    TypeOrmModule.forFeature([User, MetaTag, FileEntity]),
+    TypeOrmModule.forFeature([User, MetaTag, FileEntity, UserInvitation]),
     UserModule,
     StaticPagesModule,
     MetaTagsModule,
+    EmailModule,
   ],
   controllers: [
     AdminAuthController,
@@ -35,6 +39,7 @@ import { FileEntity } from '../file/entities/file.entity';
     AdminAuthService,
     AdminMetaTagService,
     metaTagEntityProvider,
+    userInvitationEntityProvider,
   ],
 })
 export class AdminModule {}

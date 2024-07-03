@@ -11,6 +11,8 @@ import { FileEntity } from '../file/entities/file.entity';
 import { FileModule } from '../file/file.module';
 import { UserRefreshToken } from './entities/user-refresh-token.entity';
 import { userRefreshTokenProvider } from './providers/user-refresh-token.provider';
+import { UserInvitation } from './entities/user-invitation.entity';
+import { userInvitationEntityProvider } from './providers/user-invitation-entity.provider';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { userRefreshTokenProvider } from './providers/user-refresh-token.provide
       UserVerification,
       FileEntity,
       UserRefreshToken,
+      UserInvitation,
     ]),
     EmailModule,
     FileModule,
@@ -28,6 +31,7 @@ import { userRefreshTokenProvider } from './providers/user-refresh-token.provide
     UserVerificationService,
     userVerificationEntityProvider,
     userRefreshTokenProvider,
+    userInvitationEntityProvider,
   ],
   exports: [
     UserService,

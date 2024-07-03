@@ -7,4 +7,5 @@ export enum ENTITIES {
   STATIC_PAGE_LANG = 'StaticPageLang',
   META_TAG = 'MetaTag',
   USER_REFRESH_TOKEN = 'UserRefreshToken',
+  USER_INVITATION = 'UserInvitation',
 }

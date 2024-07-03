@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../user/entities/user.entity';
 import {
@@ -19,12 +24,25 @@ import { UserRoleEnum } from '../../common/enums/user-role.enum';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { generateSearchConditions } from '../../utils/filters/entities/search';
 import { AdminUpdateUserDto } from '../dto/admin-update-user.dto';
+import { InviteUserDto } from '../dto/invite-user.dto';
+import { UserInvitation } from '../../user/entities/user-invitation.entity';
+import { ENTITIES } from '../../common/enums/entities';
+import { UserInvitationType } from '../../user/types/user-invitation.type';
+import { MailService } from '../../email/services/mail.service';
 
 @Injectable()
 export class AdminUserService {
+  private readonly INVITE_EXPIRED_AFTER = 3 * (6 * 6 * 100000); // 3 hours
+  private readonly INVITATION_SUCCESSFUL_MESSAGE =
+    'Invitation email has been sent successfully';
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserInvitation)
+    private readonly userInviteRepository: Repository<UserInvitation>,
+    @Inject(ENTITIES.USER_INVITATION)
+    private readonly userInvite: UserInvitationType,
+    private readonly mailService: MailService,
   ) {}
 
   async getUsers({
@@ -140,5 +158,44 @@ export class AdminUserService {
       role: user.role,
       createdAt: user.createdAt,
     };
+  }
+
+  async inviteUser(inviteDto: InviteUserDto) {
+    await this.checkInvitedUser(inviteDto.email);
+    const expiredAt = new Date(Date.now() + this.INVITE_EXPIRED_AFTER);
+    const invitation = new this.userInvite();
+    invitation.email = inviteDto.email;
+    invitation.expiredAt = expiredAt;
+    await this.userInviteRepository.save(invitation);
+
+    this.mailService.sendUserInvitation({
+      email: inviteDto.email,
+      username: inviteDto.email,
+      expirationTime: expiredAt,
+    });
+
+    return { message: this.INVITATION_SUCCESSFUL_MESSAGE };
+  }
+
+  private async checkInvitedUser(email: string) {
+    const createdUser = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+    });
+
+    const invitedUser = await this.userInviteRepository.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (createdUser) {
+      throw new ConflictException('This email is already taken');
+    }
+
+    if (invitedUser) {
+      throw new ConflictException('User with this email is already invited');
+    }
   }
 }

@@ -16,6 +16,11 @@ export class MailService {
   private readonly forgotPasswordUrl = this.configService.get<string>(
     CONFIG.FORGOT_PASSWORD_URL,
   );
+
+  private readonly inviteUrl = this.configService.get<string>(
+    CONFIG.INVITE_URL,
+  );
+
   constructor(
     @Inject(ADDITIONAL_PROVIDERS.SENDGRID)
     private readonly transporter: SendgridType,
@@ -56,6 +61,25 @@ export class MailService {
       from: this.SENDER,
       to: email,
       subject: 'Verification code',
+      html,
+    });
+  }
+
+  async sendUserInvitation({ email, username, expirationTime }) {
+    const buildTemplate = this.templatesService.getTemplate('inviteUserHtml');
+    //we need it for encoding special symbols such as +
+    const encodedEmail = encodeURIComponent(email);
+    const url = `${this.inviteUrl}?email=${encodedEmail}`;
+    const expiredTimeString = `${expirationTime.toLocaleDateString()} ${expirationTime.toLocaleTimeString()}`;
+    const html = buildTemplate({
+      username,
+      link: url,
+      expirationTime: expiredTimeString,
+    });
+    await this.send({
+      from: this.SENDER,
+      to: email,
+      subject: 'Crypto exchange invitation',
       html,
     });
   }
