@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ADDITIONAL_PROVIDERS } from '../../common/enums/additional-providers';
-import { PuppeteerLaunchOptions, PuppeteerNode } from 'puppeteer';
+import { LaunchOptions, PuppeteerNode } from 'puppeteer';
 import { PdfTemplatesService } from './pdf-template.service';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class PdfService {
   }
 
   async getBrowser() {
-    const options: PuppeteerLaunchOptions = {
+    const options: LaunchOptions = {
       args: ['--no-sandbox'],
       headless: true,
     };

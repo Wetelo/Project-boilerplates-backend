@@ -23,7 +23,7 @@ import { UserInvitation } from '../user/entities/user-invitation.entity';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get(CONFIG.JWT_SECRET),
         signOptions: {
-          expiresIn: configService.get(CONFIG.JWT_EXPIRATION_TIME) + 'd',
+          expiresIn: `${configService.get(CONFIG.JWT_EXPIRATION_TIME)}D`,
         },
       }),
     }),

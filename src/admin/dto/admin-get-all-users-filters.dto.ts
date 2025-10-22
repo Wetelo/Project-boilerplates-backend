@@ -38,11 +38,11 @@ export class AdminGetAllUsersFilterDto extends PaginationFilterDto {
   @IsDateString()
   createdAt: string;
 
-  @ApiPropertyOptional({ type: UsersSortByEnum })
+  @ApiPropertyOptional({ type: UsersSortByEnum, enumName: 'UsersSortByEnum' })
   @IsOptional()
   sortBy: UsersSortByEnum;
 
-  @ApiPropertyOptional({ type: SortOrderEnum })
+  @ApiPropertyOptional({ type: SortOrderEnum, enumName: 'SortOrderEnum' })
   @IsOptional()
   @IsEnum(SortOrderEnum)
   order: SortOrderEnum;

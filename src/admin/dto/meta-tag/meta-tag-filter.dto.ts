@@ -26,11 +26,11 @@ export class MetaTagFilterDto extends PaginationFilterDto {
   @IsDateString()
   createdAt: string;
 
-  @ApiPropertyOptional({ type: MetaTagSortByEnum })
+  @ApiPropertyOptional({ type: MetaTagSortByEnum, enumName: 'MetaTagSortByEnum' })
   @IsOptional()
   sortBy: MetaTagSortByEnum;
 
-  @ApiPropertyOptional({ type: SortOrderEnum })
+  @ApiPropertyOptional({ type: SortOrderEnum, enumName: 'SortOrderEnum' })
   @IsOptional()
   @IsEnum(SortOrderEnum)
   order: SortOrderEnum;
